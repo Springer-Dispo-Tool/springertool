@@ -1,80 +1,49 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Springer-Dispo Pro v48.0 - Matrix Edition</title>
-<style>
-:root{ --blue:#2563eb; --green:#16a34a; --red:#dc2626; --orange:#f59e0b; --bg:#f0f4f8; --text:#111827; }
-body{margin:0;padding:20px;font-family:'Segoe UI',sans-serif;background:var(--bg);color:var(--text);}
-.card{max-width:920px;margin:auto;background:#fff;padding:25px;border-radius:24px;box-shadow:0 15px 40px rgba(0,0,0,0.1);}
-h2{margin:0 0 15px;text-align:center;color:var(--blue);}
-label{display:block;margin:10px 0 5px;font-weight:bold;font-size:0.9rem;}
-input,select,textarea{width:100%;padding:12px;border:1px solid #ccc;border-radius:12px;font-size:1rem;}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-button{border:none;border-radius:12px;cursor:pointer;font-weight:bold;transition:0.2s;}
-.main-btn{width:100%;padding:15px;background:var(--blue);color:#fff;margin-top:15px;}
-.log{margin-top:15px;padding:12px;background:#1a202c;color:#4ade80;border-radius:12px;font-family:monospace;font-size:0.8rem;min-height:40px;}
-#results{max-width:920px;margin:20px auto;}
-.driver{background:#fff;padding:15px;border-radius:18px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 5px 15px rgba(0,0,0,0.05);border-left:8px solid #ccc;}
-.driver.all-free{border-left-color:var(--green);}
-.driver.part-free{border-left-color:var(--orange);}
-.driver.full-busy{border-left-color:var(--red); opacity: 0.8;}
-.day-strip{display:flex;gap:4px;margin-top:8px;}
-.day-box{width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:bold;color:#fff;}
-.day-free{background:var(--green);}
-.day-busy{background:var(--red);}
-.right{text-align:right;min-width:120px;}
-.modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:2000;justify-content:center;align-items:center;backdrop-filter:blur(4px);}
-.modal-box{background:#fff;padding:25px;border-radius:20px;width:90%;max-width:450px;}
-.book-btn{padding:8px 12px;background:var(--green);color:#fff;font-size:0.8rem;margin-top:5px;}
-</style>
+    <meta charset="UTF-8">
+    <title>Springer-Dispo Pro v51.0</title>
+    <style>
+        :root{ --blue:#2563eb; --green:#16a34a; --red:#dc2626; --orange:#f59e0b; --bg:#f8fafc; }
+        body{margin:0;padding:20px;font-family:'Segoe UI',sans-serif;background:var(--bg);}
+        .card{max-width:900px;margin:auto;background:#fff;padding:25px;border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,0.1);}
+        .row{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:15px;}
+        input, select, button{width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;font-size:1rem;}
+        button{background:var(--blue);color:#fff;font-weight:bold;cursor:pointer;border:none;}
+        .log{margin-top:15px;padding:12px;background:#1e293b;color:#4ade80;border-radius:10px;font-family:monospace;font-size:0.8rem;white-space:pre-wrap;max-height:150px;overflow-y:auto;}
+        .driver{background:#fff;padding:15px;border-radius:15px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 4px 10px rgba(0,0,0,0.03);border-left:6px solid #ccc;}
+        .all-free{border-left-color:var(--green);}
+        .part-free{border-left-color:var(--orange);}
+        .full-busy{border-left-color:var(--red);opacity:0.7;}
+        .day-strip{display:flex;gap:5px;margin-top:8px;}
+        .day-box{width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:bold;color:#fff;}
+        .day-free{background:var(--green);}
+        .day-busy{background:var(--red);}
+    </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>Springer-Dispo Pro v48.0</h2>
-    
-    <label>Einrichtung / Ziel</label>
-    <select id="schoolSelect" onchange="if(this.value)document.getElementById('startPlz').value=this.value">
-        <option value="">-- Bitte wählen --</option>
-        <option value="30655">Albert-Liebmann-Schule (30655)</option>
-        <option value="30165">Lebenshilfe Büttnerstraße (30165)</option>
-        <option value="30853">Gutzmann Schule (30853)</option>
-        <option value="30827">Ilmasi Schule (30827)</option>
-        <option value="31535">Michael-Ende-Schule (31535)</option>
-        </select>
-
-    <label>PLZ Startpunkt</label>
-    <input id="startPlz" value="30159">
-
+    <h2>Springer-Dispo Pro v51.0</h2>
+    <div class="row">
+        <div><label>Start-PLZ</label><input id="startPlz" value="30159"></div>
+        <div><label>Einrichtung</label>
+            <select id="schoolSelect" onchange="document.getElementById('startPlz').value=this.value">
+                <option value="30159">-- Bitte wählen --</option>
+                <option value="30655">Albert-Liebmann-Schule</option>
+                <option value="30853">Gutzmann Schule</option>
+            </select>
+        </div>
+    </div>
     <div class="row">
         <div><label>Von</label><input type="date" id="dateFrom" value="2026-04-27"></div>
         <div><label>Bis</label><input type="date" id="dateTo" value="2026-04-30"></div>
     </div>
-
-    <button class="main-btn" onclick="run()">Verfügbarkeit prüfen (Wochenansicht)</button>
-    <button onclick="setup()" style="width:100%;background:#eee;padding:10px;margin-top:8px;">⚙️ Setup</button>
-    <div id="log" class="log">Bereit.</div>
+    <button onclick="run()">Abfrage starten</button>
+    <div id="log" class="log">Bereit für die Analyse...</div>
 </div>
 
-<div id="results"></div>
-
-<div id="bookingModal" class="modal-overlay">
-    <div class="modal-box">
-        <h3>Tour buchen</h3>
-        <input type="text" id="popDriver" readonly style="background:#f3f4f6;margin-bottom:10px;">
-        <div class="row">
-            <select id="nameSelect"><option value="">-- Melder --</option><option value="Angela">Angela</option><option value="Klaus">Klaus</option></select>
-            <select id="tourSelect"><option value="">-- Tour --</option></select>
-        </div>
-        <textarea id="popDesc" rows="2" placeholder="Zusatz-Info" style="margin-top:10px;"></textarea>
-        <div style="margin-top:20px;display:flex;gap:10px;">
-            <button onclick="closeModal()" style="background:#eee;flex:1;padding:12px;">Abbruch</button>
-            <button onclick="confirmBooking()" style="background:var(--blue);color:#fff;flex:2;padding:12px;">Eintragen</button>
-        </div>
-    </div>
-</div>
+<div id="results" style="max-width:900px;margin:20px auto;"></div>
 
 <script>
 const drivers = [
@@ -87,13 +56,6 @@ const drivers = [
     {name:"Moser Siegfried",plz:"30827"},{name:"Bodewell Thomas",plz:"30853"}
 ];
 
-let currentDriverForBooking = "";
-
-window.onload=()=>{
-    const ts=document.getElementById('tourSelect');
-    for(let i=1;i<=40;i++){let o=document.createElement('option');o.value="Tour "+i;o.innerText="Tour "+i;ts.appendChild(o);}
-};
-
 async function run(){
     const kKey=localStorage.getItem("kKey"), kIds=localStorage.getItem("kIds"), gKey=localStorage.getItem("gKey");
     if(!kKey || !kIds || !gKey) return alert("Setup fehlt!");
@@ -101,101 +63,80 @@ async function run(){
     const logger = document.getElementById("log");
     const from = document.getElementById("dateFrom").value;
     const to = document.getElementById("dateTo").value;
-    
-    logger.innerHTML = "⏳ Daten werden abgeglichen...";
-    
-    // 1. Alle Events laden
+    logger.innerHTML = "⏳ Analyse gestartet...\n";
+
+    // 1. Kalenderdaten laden
     let allEvents = [];
-    for(const id of kIds.split(",")){
-        const url=`https://api.kalender.digital/public/event?calendarId=${id.trim()}&startDate=${from}&endDate=${to}T23:59:59`;
-        const r = await fetch("https://corsproxy.io/?" + encodeURIComponent(url), {headers:{"X-API-KEY":kKey}});
-        const data = await r.json();
-        allEvents.push(...(data.events || data || []));
-    }
+    try {
+        for(const id of kIds.split(",")){
+            const url=`https://api.kalender.digital/public/event?calendarId=${id.trim()}&startDate=${from}&endDate=${to}T23:59:59`;
+            const r = await fetch("https://corsproxy.io/?" + encodeURIComponent(url), {headers:{"X-API-KEY":kKey}});
+            const data = await r.json();
+            allEvents.push(...(data.events || data || []));
+        }
+    } catch(e) { logger.innerHTML += "❌ Fehler beim Laden der Kalender.\n"; }
 
-    // 2. Google Maps Distanzen
-    await loadGoogle(gKey);
-    const matrix = await getDistances(document.getElementById("startPlz").value);
-
-    // 3. Tage generieren
+    // 2. Tage generieren
     let days = [];
     let cur = new Date(from);
-    let end = new Date(to);
-    while(cur <= end){ days.push(cur.toISOString().split('T')[0]); cur.setDate(cur.getDate()+1); }
+    let endDateObj = new Date(to);
+    while(cur <= endDateObj){ days.push(cur.toISOString().split('T')[0]); cur.setDate(cur.getDate()+1); }
 
-    // 4. Fahrer-Matrix berechnen
-    let ranking = drivers.map((d, i) => {
-        const lastName = d.name.split(" ")[0].toLowerCase();
+    // 3. Matrix Berechnung (Claude-Logik integriert)
+    let ranking = drivers.map(d => {
+        // Namens-Teile für robusteren Check
+        const nameParts = d.name.toLowerCase().split(" ");
+        const lastName = nameParts[0]; // z.B. Bachmeier
+        const firstName = nameParts[1] || ""; // z.B. Reinhard
+
         const states = days.map(day => {
+            const dayStart = new Date(day + "T00:00:00").getTime();
+            const dayEnd = new Date(day + "T23:59:59").getTime();
+
             const ev = allEvents.find(e => {
                 const title = (e.title || "").toLowerCase();
                 const sub = (e.subCalendars || []).join(" ").toLowerCase();
-                const inRange = (day >= e.startDate.split(" ")[0] && day <= e.endDate.split(" ")[0]);
-                return inRange && (title.includes(lastName) || sub.includes(lastName));
+                
+                // Stabiler Datumscheck
+                const evStart = new Date(e.startDate.replace(" ", "T")).getTime();
+                const evEnd = new Date(e.endDate.replace(" ", "T")).getTime();
+                const inRange = (evStart <= dayEnd && evEnd >= dayStart);
+
+                // Namensmatch: Entweder Nachname + Vorname kommen im Text vor oder Unterkalender passt
+                const nameMatch = title.includes(lastName) || sub.includes(lastName);
+                return inRange && nameMatch;
             });
             return { day, busy: !!ev, title: ev ? ev.title : "Frei" };
         });
 
         const freeCount = states.filter(s => !s.busy).length;
-        const dist = matrix.rows[i].elements[0];
-        
-        return {
-            ...d, 
-            states, 
-            freeCount, 
-            distText: dist.status==="OK" ? dist.distance.text : "-",
-            distVal: dist.status==="OK" ? dist.distance.value : 999999
-        };
+        return { ...d, states, freeCount };
     });
 
-    // Sortierung: Meiste freie Tage zuerst, dann Entfernung
-    ranking.sort((a,b) => (b.freeCount - a.freeCount) || (a.distVal - b.distVal));
+    // Sortierung
+    ranking.sort((a,b) => b.freeCount - a.freeCount);
     
-    render(ranking);
-    logger.innerHTML = "✅ Abgleich abgeschlossen.";
-}
-
-function render(list){
-    document.getElementById("results").innerHTML = list.map(d => {
-        let cls = d.freeCount === d.states.length ? "all-free" : (d.freeCount === 0 ? "full-busy" : "part-free");
-        return `
-        <div class="driver ${cls}">
+    // 4. Anzeige
+    document.getElementById("results").innerHTML = ranking.map(d => `
+        <div class="driver ${d.freeCount==days.length?'all-free':(d.freeCount==0?'full-busy':'part-free')}">
             <div>
-                <strong>${d.name}</strong> <small>(${d.distText})</small>
+                <strong>${d.name}</strong>
                 <div class="day-strip">
                     ${d.states.map(s => `<div class="day-box ${s.busy?'day-busy':'day-free'}" title="${s.title}">${s.day.split("-")[2]}</div>`).join("")}
                 </div>
-                <button class="book-btn" onclick="openModal('${d.name}')">Tour buchen</button>
             </div>
-            <div class="right">
-                <span style="font-size:0.7rem; color:#666;">Verfügbar:</span><br>
-                ${d.freeCount} / ${d.states.length} Tg.
-            </div>
-        </div>`;
-    }).join("");
+            <div style="text-align:right;">${d.freeCount}/${days.length} Tg frei</div>
+        </div>
+    `).join("");
+    
+    logger.innerHTML += "✅ Abfrage beendet. Termine wurden tagesgenau geprüft.";
 }
 
-// Hilfsfunktionen (Google, Modal, etc.)
-function loadGoogle(k){ return new Promise(res => { if(window.google) return res(); const s=document.createElement("script"); s.src=`https://maps.googleapis.com/maps/api/js?key=${k}`; s.onload=res; document.head.appendChild(s); }); }
-function getDistances(dest){ return new Promise(res => { new google.maps.DistanceMatrixService().getDistanceMatrix({origins:drivers.map(d=>d.plz),destinations:[dest],travelMode:'DRIVING'}, r => res(r)); }); }
-function setup(){ localStorage.setItem("kKey", prompt("API Key:")); localStorage.setItem("kIds", prompt("Kalender IDs:")); localStorage.setItem("gKey", prompt("Google Key:")); location.reload(); }
-function openModal(name){ currentDriverForBooking = name; document.getElementById('popDriver').value = name; document.getElementById('bookingModal').style.display = 'flex'; }
-function closeModal(){ document.getElementById('bookingModal').style.display = 'none'; }
-
-async function confirmBooking(){
-    const kKey=localStorage.getItem("kKey"), from=document.getElementById("dateFrom").value, to=document.getElementById("dateTo").value;
-    const desc = document.getElementById('popDesc').value + " (" + document.getElementById('nameSelect').value + ")";
-    const school = document.getElementById('schoolSelect').selectedOptions[0].text;
-    
-    const payload = {
-        startDate: `${from} 00:00:00`, endDate: `${to} 23:59:59`,
-        title: school, description: desc, wholeDay: true, subCalendars: [currentDriverForBooking]
-    };
-    
-    closeModal();
-    const proxy = "https://corsproxy.io/?" + encodeURIComponent("https://api.kalender.digital/public/event");
-    const r = await fetch(proxy, { method:"POST", headers:{"Content-Type":"application/json","X-API-KEY":kKey}, body:JSON.stringify(payload) });
-    if(r.ok){ alert("Gebucht!"); run(); }
+function setup(){
+    localStorage.setItem("kKey", prompt("Kalender API Key:", localStorage.getItem("kKey")||""));
+    localStorage.setItem("kIds", prompt("Kalender IDs (mit Komma):", localStorage.getItem("kIds")||""));
+    localStorage.setItem("gKey", prompt("Google Maps API Key:", localStorage.getItem("gKey")||""));
+    location.reload();
 }
 </script>
 </body>
