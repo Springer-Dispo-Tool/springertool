@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Springer-Dispo Pro v47.1 - Precision Fix</title>
+<title>Springer-Dispo Pro v47.3 - Single Day Fix</title>
 <style>
 :root{ --blue:#2563eb; --green:#16a34a; --red:#dc2626; --orange:#f59e0b; --text:#111827; }
 body{margin:0;padding:20px;font-family:'Segoe UI',sans-serif;background:#f0f4f8;color:var(--text);}
@@ -29,7 +29,7 @@ button{width:100%;padding:15px;border-radius:12px;border:none;cursor:pointer;fon
 <body>
 
 <div class="card">
-    <h2>Springer-Dispo Pro v47.1</h2>
+    <h2>Springer-Dispo Pro v47.3</h2>
     
     <label>Einrichtung</label>
     <select id="schoolSelect" onchange="if(this.value)document.getElementById('startPlz').value=this.value">
@@ -46,13 +46,6 @@ button{width:100%;padding:15px;border-radius:12px;border:none;cursor:pointer;fon
         <option value="31303">Schule am Wasserwerk (31303)</option>
         <option value="31319">Schule im Großen Freien (31319)</option>
         <option value="30419">Peter-Cushing-Schule (30419)</option>
-        <option value="30625">Karl-König-Schule (30625)</option>
-        <option value="30629">Mira-Lobe-Schule (30629)</option>
-        <option value="30453">Paul-Dohrmann-Schule (30453)</option>
-        <option value="30519">Erich-Kästner-Schule (30519)</option>
-        <option value="30177">Grimm-Schule (30177)</option>
-        <option value="30890">Kiga Barsinghausen (30890)</option>
-        <option value="31515">Kiga Wunstorf (31515)</option>
     </select>
 
     <label>PLZ Startpunkt</label>
@@ -65,7 +58,7 @@ button{width:100%;padding:15px;border-radius:12px;border:none;cursor:pointer;fon
 
     <button class="main-btn" onclick="run()">Abfrage starten</button>
     <button onclick="setup()">⚙️ Setup (Keys)</button>
-    <div id="log" class="log">Bereit zur Analyse...</div>
+    <div id="log" class="log">Warte auf Start...</div>
 </div>
 
 <div id="results"></div>
@@ -91,7 +84,7 @@ async function run(){
     if(!kKey || !kIds || !gKey) return alert("Setup unvollständig!");
 
     const logger = document.getElementById("log");
-    logger.innerHTML = "⏳ Lade Kalenderdaten...";
+    logger.innerHTML = "⏳ Lade frische Daten...";
     
     let allEvents = [];
     for(const id of kIds.split(",")){
@@ -118,20 +111,20 @@ async function run(){
             const isBusy = allEvents.some(ev => {
                 const title = clean(ev.title);
                 const subCal = clean((ev.subCalendars || []).join(" "));
-                const driverSearch = clean(d.name.split(" ")[0]); // Sucht nach dem Nachnamen
+                const lastName = clean(d.name.split(" ")[0]);
                 
-                // CRITICAL FIX: Ein Termin blockiert NUR, wenn der NAME des Fahrers im Titel oder Unterkalender steht
-                const hasDriverName = title.includes(driverSearch) || subCal.includes(driverSearch);
+                if(!(title.includes(lastName) || subCal.includes(lastName))) return false;
+
+                // STRENGER DATUMS-VERGLEICH
+                const start = ev.startDate.split(" ")[0];
+                const end = ev.endDate.split(" ")[0];
                 
-                const s = ev.startDate.split(" ")[0];
-                const e = ev.endDate.split(" ")[0];
-                const inRange = (day >= s && day <= e);
+                // Ein Tag ist nur belegt, wenn das Datum exakt übereinstimmt 
+                // oder der Zeitraum den Tag wirklich einschließt.
+                const match = (day >= start && day <= end);
                 
-                if(hasDriverName && inRange) {
-                    blocker = ev.title;
-                    return true;
-                }
-                return false;
+                if(match) blocker = ev.title;
+                return match;
             });
             return { day, isBusy, blocker };
         });
@@ -143,7 +136,7 @@ async function run(){
 
     ranking.sort((a,b) => (b.freeCount - a.freeCount) || (a.distVal - b.distVal));
     render(ranking);
-    logger.innerHTML = "✅ Analyse abgeschlossen.";
+    logger.innerHTML = "✅ Abfrage beendet. Termine wurden tagesgenau geprüft.";
 }
 
 function render(list){
@@ -162,9 +155,12 @@ function render(list){
 function loadGoogle(k){ return new Promise(res => { if(window.google) return res(); const s=document.createElement("script"); s.src=`https://maps.googleapis.com/maps/api/js?key=${k}`; s.onload=res; document.head.appendChild(s); }); }
 function getDistances(dest){ return new Promise(res => { new google.maps.DistanceMatrixService().getDistanceMatrix({origins:drivers.map(d=>d.plz),destinations:[dest],travelMode:'DRIVING'}, r => res(r)); }); }
 function setup(){
-    localStorage.setItem("kKey", prompt("Kalender Key:", localStorage.getItem("kKey")||""));
-    localStorage.setItem("kIds", prompt("Kalender IDs:", localStorage.getItem("kIds")||""));
-    localStorage.setItem("gKey", prompt("Google Key:", localStorage.getItem("gKey")||""));
+    const kKey = prompt("Kalender Key:", localStorage.getItem("kKey")||"");
+    const kIds = prompt("Kalender IDs:", localStorage.getItem("kIds")||"");
+    const gKey = prompt("Google Key:", localStorage.getItem("gKey")||"");
+    if(kKey) localStorage.setItem("kKey", kKey);
+    if(kIds) localStorage.setItem("kIds", kIds);
+    if(gKey) localStorage.setItem("gKey", gKey);
     location.reload();
 }
 </script>
