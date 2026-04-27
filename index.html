@@ -1,328 +1,250 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Springer-Dispo Pro v45.8 (Final Match)</title>
-    <style>
-        :root {
-            --blue: #2563eb;
-            --blue2: #1d4ed8;
-            --green: #16a34a;
-            --red: #dc2626;
-            --bg: #eef2f7;
-            --line: #e5e7eb;
-            --text: #111827;
-        }
-        body {
-            margin: 0;
-            padding: 20px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-        }
-        .card {
-            max-width: 900px;
-            margin: auto;
-            background: #fff;
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-        h2 { text-align: center; color: var(--blue); margin-top: 0; }
-        label { display: block; margin: 10px 0 5px; font-weight: bold; font-size: 0.9rem; }
-        input, select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--line);
-            border-radius: 10px;
-            font-size: 1rem;
-            box-sizing: border-box;
-        }
-        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        button {
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.2s;
-        }
-        .main-btn {
-            width: 100%;
-            padding: 15px;
-            margin-top: 15px;
-            background: var(--blue);
-            color: #fff;
-            font-size: 1rem;
-        }
-        .main-btn:hover { background: var(--blue2); }
-        .setup-btn {
-            width: 100%;
-            margin-top: 10px;
-            background: #f3f4f6;
-            padding: 10px;
-            color: #666;
-        }
-        .log {
-            margin-top: 15px;
-            padding: 12px;
-            background: #0f172a;
-            color: #4ade80;
-            border-radius: 10px;
-            font-family: monospace;
-            font-size: 0.85rem;
-            min-height: 50px;
-            white-space: pre-wrap;
-            max-height: 150px;
-            overflow-y: auto;
-        }
-        #results { max-width: 900px; margin: 20px auto; }
-        .driver {
-            background: #fff;
-            padding: 15px;
-            border-radius: 15px;
-            margin-bottom: 10px;
-            display:flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            border-left: 6px solid #ccc;
-        }
-        .full-free { border-left-color: var(--green); }
-        .partial-free { border-left-color: #fbbf24; }
-        .full-busy { border-left-color: var(--red); background: #fff5f5; }
-        .day-bar { display: flex; gap: 4px; margin-top: 8px; }
-        .day-dot {
-            width: 24px;
-            height: 24px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 11px;
-            color: #fff;
-            font-weight: bold;
-        }
-        .dot-free { background: var(--green); }
-        .dot-busy { background: var(--red); }
-        .dist-info { text-align: right; font-weight: bold; color: var(--blue); }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Springer-Dispo Pro v45.11 (Full Setup)</title>
+<style>
+:root{
+--blue:#2563eb; --blue2:#1d4ed8; --green:#16a34a; --green2:#15803d;
+--red:#dc2626; --bg:#eef2f7; --line:#e5e7eb; --text:#111827; --muted:#6b7280;
+}
+*{box-sizing:border-box;}
+body{margin:0;padding:22px;font-family:'Segoe UI',Arial,sans-serif;background:linear-gradient(135deg,#eef2f7,#dbeafe);color:var(--text);}
+.card{max-width:920px;margin:auto;background:#fff;padding:26px;border-radius:24px;box-shadow:0 20px 60px rgba(0,0,0,.10);}
+h2{margin:0 0 18px;text-align:center;color:var(--blue);}
+label{display:block;margin:12px 0 6px;font-weight:700;font-size:.92rem;}
+input,select,textarea{width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;font-size:1rem;}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+button{border:none;border-radius:12px;cursor:pointer;font-weight:700;transition:.2s;}
+.main-btn{width:100%;padding:15px;margin-top:14px;background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;font-size:1rem;}
+.book-btn{padding:8px 12px;background:var(--green);color:#fff;margin-top:8px;}
+.log{margin-top:14px;padding:14px;background:#0f172a;color:#4ade80;font-family:monospace;border-radius:14px;font-size:.85rem;min-height:50px;white-space:pre-wrap;}
+#results{max-width:920px;margin:18px auto;}
+.driver{background:#fff;padding:16px;border-radius:18px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 8px 20px rgba(0,0,0,0.06);border-left:8px solid #d1d5db;}
+.free{border-left-color:var(--green);}
+.busy{border-left-color:var(--red);background:#fff7f7;}
+.day-bar{display:flex;gap:4px;margin-top:10px;}
+.day-dot{width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;font-weight:bold;}
+.dot-free{background:var(--green);}.dot-busy{background:var(--red);}
+.modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:2000;justify-content:center;align-items:center;backdrop-filter:blur(4px);}
+.modal-box{background:#fff;padding:25px;border-radius:20px;width:95%;max-width:450px;}
+.dist-val{text-align:right;font-weight:800;color:var(--blue);font-size:1.1rem;}
+</style>
 </head>
 <body>
 
 <div class="card">
-    <h2>Springer-Dispo Pro v45.8</h2>
+    <h2>Springer-Dispo Pro v45.11</h2>
     
-    <label>Einrichtung / Ziel (Startpunkt für Distanz)</label>
-    <select id="schoolSelect" onchange="document.getElementById('startPlz').value=this.value">
-        <option value="">-- Bitte wählen --</option>
+    <label>Einrichtung / Ziel</label>
+    <select id="schoolSelect" onchange="if(this.value) document.getElementById('startPlz').value=this.value">
+        <option value="">-- Einrichtung wählen --</option>
         <option value="30655">Albert-Liebmann-Schule (30655)</option>
         <option value="30165">Lebenshilfe Büttnerstraße (30165)</option>
         <option value="30900">Kindergarten Domino (30900)</option>
         <option value="30165">Kindergarten - Forst Mecklenheide (30165)</option>
         <option value="30880">Freie Martinschule (30880)</option>
         <option value="30851">Kindergarten Langenhagen (30851)</option>
+        <option value="30629">Kindergarten Misburg (30629)</option>
         <option value="31535">Michael-Ende-Schule (31535)</option>
+        <option value="31515">Paul-Moor-Schule (31515)</option>
+        <option value="30938">Pestalozzi-Schule (30938)</option>
+        <option value="31303">Grundschule Otze (31303)</option>
+        <option value="31303">Schule am Wasserwerk (31303)</option>
+        <option value="31319">Schule im Großen Freien (31319)</option>
+        <option value="30900">Unter den Eichen/BOS (30900)</option>
+        <option value="30165">Stötzner-Schule (30165)</option>
+        <option value="30449">Wilhelm-Schade-Schule (30449)</option>
+        <option value="30559">Bildungszentrum für Taubblinde (30559)</option>
         <option value="30900">GS Bissendorf/ Brelingen (30900)</option>
+        <option value="30855">Adolf-Reichwein-Schule (30855)</option>
+        <option value="30982">Calenberger Schule (30982)</option>
+        <option value="30938">Kindergarten Craney (30938)</option>
+        <option value="30890">Bert-Brecht-Schule (30890)</option>
         <option value="30853">Gutzmann Schule (30853)</option>
+        <option value="30926">Anne Frank Schule (30926)</option>
+        <option value="30827">Ilmasi Schule (30827)</option>
     </select>
 
-    <label>PLZ Startpunkt (für Kilometerberechnung)</label>
-    <input id="startPlz" placeholder="z.B. 30159" value="30159">
+    <label>PLZ Startpunkt (für Kilometer-Ranking)</label>
+    <input id="startPlz" value="30159">
 
     <div class="row">
         <div><label>Von</label><input type="date" id="dateFrom" value="2026-04-27"></div>
         <div><label>Bis</label><input type="date" id="dateTo" value="2026-04-30"></div>
     </div>
 
-    <button class="main-btn" onclick="run()">Verfügbarkeit & Distanz prüfen</button>
-    <button class="setup-btn" onclick="setup()">⚙️ API-Setup (Keys & IDs)</button>
-    
-    <div id="log" class="log">System bereit. Warte auf Eingabe...</div>
+    <button class="main-btn" onclick="run()">Verfügbarkeit & Ranking prüfen</button>
+    <button style="width:100%;margin-top:10px;background:#eee;padding:10px;border-radius:12px;" onclick="setup()">⚙️ API Einstellungen</button>
+    <div id="log" class="log">System bereit.</div>
 </div>
 
 <div id="results"></div>
 
+<div id="bookingModal" class="modal-overlay">
+    <div class="modal-box">
+        <h3>Tour eintragen</h3>
+        <label>Fahrer</label>
+        <input type="text" id="popDriver" readonly style="background:#f3f4f6">
+        <label>Wer meldet?</label>
+        <select id="nameSelect" onchange="updatePopDesc()">
+            <option value="">-- Melder --</option>
+            <option value="Angela">Angela</option><option value="Anja">Anja</option>
+            <option value="Beate">Beate</option><option value="Birgit">Birgit</option>
+            <option value="Daniela">Daniela</option><option value="Frank">Frank</option>
+            <option value="Marion">Marion</option><option value="Michael">Michael</option>
+            <option value="Nicole">Nicole</option><option value="Silke">Silke</option>
+        </select>
+        <label>Zusatz-Info (Tour/Grund)</label>
+        <textarea id="popDesc" rows="2"></textarea>
+        <div style="margin-top:20px;display:flex;gap:10px;">
+            <button onclick="closeModal()" style="background:#eee;flex:1;padding:12px;">Abbruch</button>
+            <button onclick="confirmBooking()" style="background:var(--blue);color:#fff;flex:2;padding:12px;">Eintragen</button>
+        </div>
+    </div>
+</div>
+
 <script>
-// Fahrerliste
 const drivers = [
-    {name:"Aschenbach André", plz:"30989"}, {name:"Ohm Lars", plz:"30559"},
-    {name:"Bachmeier Reinhard", plz:"30659"}, {name:"Isfahan Mozaffaey Hamid", plz:"30519"},
-    {name:"Otto Alexander", plz:"30173"}, {name:"Türkel Tuncer", plz:"30161"},
-    {name:"Schrader Harald", plz:"30880"}, {name:"Neubauer Michael", plz:"30853"},
-    {name:"Ferkau Eckart", plz:"30851"}, {name:"Bethmann Ekkehard", plz:"31535"},
-    {name:"Hauer Frank", plz:"30900"}, {name:"Kruse Jens Roland", plz:"31275"},
-    {name:"Grimpe Dirk", plz:"30827"}, {name:"Häge Klaus  Dieter", plz:"30519"},
-    {name:"Von Treskow Albrecht", plz:"30659"}, {name:"Giuseppe Caruso", plz:"30880"},
-    {name:"Popescu Viorel Florinel", plz:"30827"}, {name:"Beka Jonel", plz:"31275"},
-    {name:"Moser Siegfried", plz:"30827"}, {name:"Bodewell Thomas", plz:"30853"}
+    {name:"Aschenbach André",plz:"30989"},{name:"Ohm Lars",plz:"30559"},{name:"Bachmeier Reinhard",plz:"30659"},
+    {name:"Isfahan Mozaffaey Hamid",plz:"30519"},{name:"Otto Alexander",plz:"30173"},{name:"Türkel Tuncer",plz:"30161"},
+    {name:"Schrader Harald",plz:"30880"},{name:"Neubauer Michael",plz:"30853"},{name:"Ferkau Eckart",plz:"30851"},
+    {name:"Bethmann Ekkehard",plz:"31535"},{name:"Hauer Frank",plz:"30900"},{name:"Kruse Jens Roland",plz:"31275"},
+    {name:"Grimpe Dirk",plz:"30827"},{name:"Häge Klaus  Dieter",plz:"30519"},{name:"Von Treskow Albrecht",plz:"30659"},
+    {name:"Giuseppe Caruso",plz:"30880"},{name:"Popescu Viorel Florinel",plz:"30827"},{name:"Beka Jonel",plz:"31275"},
+    {name:"Moser Siegfried",plz:"30827"},{name:"Bodewell Thomas",plz:"30853"}
 ];
 
-// Ultra-Säuberung: Entfernt ALLES außer Buchstaben und Zahlen
-function ultraClean(str) {
-    if(!str) return "";
-    return str.toLowerCase()
-        .replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss")
-        .normalize("NFD").replace(/[\u0300-\u036f]/g, "") 
-        .replace(/\s+/g, "") 
-        .replace(/[^a-z0-9]/g, ""); 
+let loadedEvents = [];
+let currentDriverForBooking = "";
+
+function setup(){
+    localStorage.setItem("kKey",prompt("Kalender API Key:",localStorage.getItem("kKey")||""));
+    localStorage.setItem("kIds",prompt("Kalender IDs:",localStorage.getItem("kIds")||""));
+    localStorage.setItem("gKey",prompt("Google API Key:",localStorage.getItem("gKey")||""));
+    location.reload();
 }
 
+function log(txt){document.getElementById("log").textContent=txt;}
+
 async function run(){
-    const logBox = document.getElementById("log");
-    const kKey=localStorage.getItem("kKey"), kIds=localStorage.getItem("kIds"), gKey=localStorage.getItem("gKey");
-    
-    if(!kKey || !kIds || !gKey){
-        alert("Bitte zuerst das Setup (API Keys) ausfüllen!");
-        return;
-    }
-    
-    logBox.textContent = "⏳ Starte Abfrage...";
-    
     try {
-        const from = document.getElementById("dateFrom").value;
-        const to = document.getElementById("dateTo").value;
-        const startPlz = document.getElementById("startPlz").value;
+        const kKey=localStorage.getItem("kKey"), kIds=localStorage.getItem("kIds"), gKey=localStorage.getItem("gKey");
+        if(!kKey || !kIds || !gKey){alert("Bitte Setup ausfüllen."); return;}
         
-        // 1. Kalenderdaten laden
-        const events = await loadEvents(kIds, kKey, from, to);
+        const from=document.getElementById("dateFrom").value, to=document.getElementById("dateTo").value;
+        log("📅 Lade Kalenderdaten...");
+        loadedEvents = await loadEvents(from, to, kIds, kKey);
         
-        // 2. Google Maps für Distanzen laden
+        log("🗺️ Google Maps Distanzen...");
         await loadGoogle(gKey);
-        const matrix = await getDistances(startPlz);
-        
-        // 3. Auswertung
-        const dateRange = getDateRange(from, to);
+        const matrix = await getDistances(document.getElementById("startPlz").value);
+
+        const range = getDateRange(from, to);
         let ranking = drivers.map((d, i) => {
-            const dayStates = checkDriverDays(d.name, dateRange, events);
-            const freeCount = dayStates.filter(ds => !ds.busy).length;
-            const distInfo = matrix.rows[i].elements[0];
+            const dayStates = range.map(date => {
+                const check = checkSingleBusy(d.name, date, loadedEvents);
+                return { date, busy: check.busy, reason: check.reason };
+            });
+            const freeCount = dayStates.filter(s => !s.busy).length;
+            const dist = matrix.rows[i].elements[0];
             
             return {
-                ...d,
-                dayStates,
-                freeCount,
-                totalDays: dateRange.length,
-                distText: distInfo.status === "OK" ? distInfo.distance.text : "? km",
-                distVal: distInfo.status === "OK" ? distInfo.distance.value : 999999
+                ...d, dayStates, freeCount, totalDays: range.length,
+                distText: dist.status === "OK" ? dist.distance.text : "-",
+                distVal: dist.status === "OK" ? dist.distance.value : 999999
             };
         });
 
-        // Sortierung: Wer am meisten frei hat und am nächsten wohnt
+        // Sortierung: Zuerst die mit den meisten freien Tagen, dann nach Entfernung
         ranking.sort((a,b) => (b.freeCount - a.freeCount) || (a.distVal - b.distVal));
         
         render(ranking);
-        logBox.textContent = "✅ Abfrage erfolgreich abgeschlossen!";
-        
-    } catch(e) {
-        logBox.textContent = "❌ Fehler: " + e.message;
-        console.error(e);
-    }
+        log("✅ Analyse abgeschlossen.");
+    } catch(e) { log("❌ Fehler: " + e.message); }
 }
 
-function checkDriverDays(driverName, range, events) {
-    const cleanDriver = ultraClean(driverName);
-    return range.map(date => {
-        const hit = events.find(ev => {
-            const evDate = ev.startDate.split(' ')[0];
-            if(evDate !== date) return false;
-            
-            if(ev.subCalendars && Array.isArray(ev.subCalendars)) {
-                return ev.subCalendars.some(sc => {
-                    const cleanSC = ultraClean(sc);
-                    return cleanSC.includes(cleanDriver) || cleanDriver.includes(cleanSC);
-                });
-            }
-            return false;
-        });
-        return { date, busy: !!hit };
-    });
-}
-
-async function loadEvents(ids, key, from, to) {
+async function loadEvents(from, to, ids, key) {
     let all = [];
-    const idArray = ids.split(",");
-    for(const id of idArray) {
+    for(const id of ids.split(",")) {
         const url = `https://api.kalender.digital/public/event?calendarId=${id.trim()}&startDate=${from}&endDate=${to}T23:59:59&timeZone=Europe/Berlin&_=${Date.now()}`;
-        const response = await fetch("https://corsproxy.io/?" + encodeURIComponent(url), {
-            headers: { "X-API-KEY": key }
-        });
-        const data = await response.json();
-        const evList = data.events || data; 
-        all.push(...(Array.isArray(evList) ? evList : []));
+        const r = await fetch("https://corsproxy.io/?" + encodeURIComponent(url), {headers:{"X-API-KEY":key}});
+        const data = await r.json();
+        const evs = data.events || data;
+        if(Array.isArray(evs)) all.push(...evs);
     }
     return all;
 }
 
-function loadGoogle(key) {
-    return new Promise((resolve) => {
-        if(window.google) return resolve();
-        const script = document.createElement("script");
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${key}`;
-        script.onload = resolve;
-        document.head.appendChild(script);
+function checkSingleBusy(name, date, events) {
+    const searchName = name.toLowerCase().trim();
+    const hit = events.find(ev => {
+        if(ev.startDate.split(' ')[0] !== date) return false;
+        let txt = "";
+        if(Array.isArray(ev.subCalendars)) txt = ev.subCalendars.join(" ").toLowerCase().trim();
+        return txt === searchName || txt.includes(searchName);
     });
+    return hit ? {busy: true, reason: hit.title} : {busy: false};
 }
 
-function getDistances(dest) {
-    return new Promise((resolve, reject) => {
-        const service = new google.maps.DistanceMatrixService();
-        service.getDistanceMatrix({
-            origins: drivers.map(d => d.plz),
-            destinations: [dest],
-            travelMode: 'DRIVING'
-        }, (response, status) => {
-            if(status === 'OK') resolve(response);
-            else reject(new Error("Google Maps Error: " + status));
-        });
+function loadGoogle(key){
+    return new Promise(res => { if(window.google) return res(); const s=document.createElement("script"); s.src=`https://maps.googleapis.com/maps/api/js?key=${key}`; s.onload=res; document.head.appendChild(s); });
+}
+
+function getDistances(dest){
+    return new Promise((res, rej) => {
+        new google.maps.DistanceMatrixService().getDistanceMatrix({
+            origins: drivers.map(d => d.plz), destinations: [dest], travelMode: 'DRIVING'
+        }, (r, s) => { if(s==='OK') res(r); else rej(s); });
     });
 }
 
 function getDateRange(s, e) {
     let start = new Date(s), end = new Date(e), res = [];
-    while(start <= end) {
-        res.push(start.toISOString().split('T')[0]);
-        start.setDate(start.getDate() + 1);
-    }
+    while(start <= end) { res.push(start.toISOString().split('T')[0]); start.setDate(start.getDate()+1); }
     return res;
 }
 
 function render(list) {
-    const cont = document.getElementById("results");
-    cont.innerHTML = list.map(d => {
-        const statusClass = d.freeCount === d.totalDays ? 'full-free' : (d.freeCount === 0 ? 'full-busy' : 'partial-free');
-        const statusText = d.freeCount === d.totalDays ? 'KOMPLETT FREI' : (d.freeCount === 0 ? 'BESETZT' : `${d.freeCount} Tage frei`);
-        
-        return `
-            <div class="driver ${statusClass}">
-                <div>
-                    <strong>${d.name}</strong> (${d.plz})<br>
-                    <small>${statusText}</small>
-                    <div class="day-bar">
-                        ${d.dayStates.map(ds => `
-                            <div class="day-dot ${ds.busy ? 'dot-busy' : 'dot-free'}" title="${ds.date}">
-                                ${ds.date.split('-')[2]}
-                            </div>
-                        `).join('')}
-                    </div>
+    document.getElementById("results").innerHTML = list.map(d => `
+        <div class="driver ${d.freeCount === d.totalDays ? 'free' : (d.freeCount === 0 ? 'busy' : '')}">
+            <div>
+                <strong>${d.name}</strong> (${d.plz})<br>
+                <div class="day-bar">
+                    ${d.dayStates.map(ds => `<div class="day-dot ${ds.busy?'dot-busy':'dot-free'}" title="${ds.busy ? ds.reason : 'Frei'}">${ds.date.split('-')[2]}</div>`).join('')}
                 </div>
-                <div class="dist-info">
-                    ${d.distText}
-                </div>
+                ${d.freeCount > 0 ? `<button class="book-btn" onclick="openModal('${d.name.replace(/'/g,"\\'")}')">BUCHEN</button>` : '<span style="color:red;font-size:0.8rem;font-weight:bold;">VOLL BELEGT</span>'}
             </div>
-        `;
-    }).join("");
+            <div class="dist-val">${d.distText}</div>
+        </div>`).join("");
 }
 
-function setup() {
-    const kKey = prompt("Kalender API Key:", localStorage.getItem("kKey") || "");
-    const kIds = prompt("Kalender IDs (mit Komma trennen):", localStorage.getItem("kIds") || "");
-    const gKey = prompt("Google Maps API Key:", localStorage.getItem("gKey") || "");
-    
-    if(kKey) localStorage.setItem("kKey", kKey);
-    if(kIds) localStorage.setItem("kIds", kIds);
-    if(gKey) localStorage.setItem("gKey", gKey);
-    location.reload();
+function openModal(name){
+    currentDriverForBooking = name;
+    document.getElementById('popDriver').value = name;
+    document.getElementById('bookingModal').style.display = 'flex';
+}
+function closeModal(){document.getElementById('bookingModal').style.display = 'none';}
+function updatePopDesc(){
+    const n = document.getElementById('nameSelect').value;
+    document.getElementById('popDesc').value = n ? n + " meldet sich." : "";
+}
+
+async function confirmBooking(){
+    const kKey=localStorage.getItem("kKey"), from=document.getElementById("dateFrom").value, to=document.getElementById("dateTo").value;
+    const school = document.getElementById('schoolSelect').selectedOptions[0].text;
+    const payload = {
+        startDate: from + " 00:00:00", endDate: to + " 23:59:59",
+        title: school, description: document.getElementById('popDesc').value,
+        wholeDay: true, subCalendars: [currentDriverForBooking], timeZone: "Europe/Berlin"
+    };
+    closeModal();
+    log("⏳ Speichere Buchung...");
+    const r = await fetch("https://corsproxy.io/?" + encodeURIComponent("https://api.kalender.digital/public/event"), {
+        method:"POST", headers:{"Content-Type":"application/json","X-API-KEY":kKey}, body:JSON.stringify(payload)
+    });
+    if(r.ok){ alert("✅ Erfolgreich gebucht!"); run(); } else { alert("❌ Fehler bei der Buchung!"); }
 }
 </script>
 </body>
