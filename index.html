@@ -3,50 +3,47 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Springer-Dispo Pro v47.3 - Single Day Fix</title>
+<title>Springer-Dispo Pro v48.0 - Matrix Edition</title>
 <style>
-:root{ --blue:#2563eb; --green:#16a34a; --red:#dc2626; --orange:#f59e0b; --text:#111827; }
-body{margin:0;padding:20px;font-family:'Segoe UI',sans-serif;background:#f0f4f8;color:var(--text);}
-.card{max-width:980px;margin:auto;background:#fff;padding:25px;border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,0.1);}
-h2{margin:0;color:var(--blue);text-align:center;}
+:root{ --blue:#2563eb; --green:#16a34a; --red:#dc2626; --orange:#f59e0b; --bg:#f0f4f8; --text:#111827; }
+body{margin:0;padding:20px;font-family:'Segoe UI',sans-serif;background:var(--bg);color:var(--text);}
+.card{max-width:920px;margin:auto;background:#fff;padding:25px;border-radius:24px;box-shadow:0 15px 40px rgba(0,0,0,0.1);}
+h2{margin:0 0 15px;text-align:center;color:var(--blue);}
 label{display:block;margin:10px 0 5px;font-weight:bold;font-size:0.9rem;}
-input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:10px;font-size:1rem;}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:15px;}
-button{width:100%;padding:15px;border-radius:12px;border:none;cursor:pointer;font-weight:bold;margin-top:10px;}
-.main-btn{background:var(--blue);color:#fff;}
-.log{margin-top:15px;padding:10px;background:#1a202c;color:#4ade80;border-radius:10px;font-family:monospace;font-size:0.75rem;max-height:120px;overflow-y:auto;}
-#results{max-width:980px;margin:20px auto;}
-.driver{background:#fff;padding:15px;border-radius:15px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 4px 10px rgba(0,0,0,0.05);border-left:8px solid #ccc;}
-.driver.good{border-left-color:var(--green)}
-.driver.mid{border-left-color:var(--orange)}
-.driver.full{border-left-color:var(--red)}
-.daybar{display:flex;gap:5px;margin-top:10px;}
-.day{width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:bold;color:#fff;}
-.free{background:var(--green)}
-.busy{background:var(--red)}
+input,select,textarea{width:100%;padding:12px;border:1px solid #ccc;border-radius:12px;font-size:1rem;}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+button{border:none;border-radius:12px;cursor:pointer;font-weight:bold;transition:0.2s;}
+.main-btn{width:100%;padding:15px;background:var(--blue);color:#fff;margin-top:15px;}
+.log{margin-top:15px;padding:12px;background:#1a202c;color:#4ade80;border-radius:12px;font-family:monospace;font-size:0.8rem;min-height:40px;}
+#results{max-width:920px;margin:20px auto;}
+.driver{background:#fff;padding:15px;border-radius:18px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 5px 15px rgba(0,0,0,0.05);border-left:8px solid #ccc;}
+.driver.all-free{border-left-color:var(--green);}
+.driver.part-free{border-left-color:var(--orange);}
+.driver.full-busy{border-left-color:var(--red); opacity: 0.8;}
+.day-strip{display:flex;gap:4px;margin-top:8px;}
+.day-box{width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:bold;color:#fff;}
+.day-free{background:var(--green);}
+.day-busy{background:var(--red);}
+.right{text-align:right;min-width:120px;}
+.modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:2000;justify-content:center;align-items:center;backdrop-filter:blur(4px);}
+.modal-box{background:#fff;padding:25px;border-radius:20px;width:90%;max-width:450px;}
+.book-btn{padding:8px 12px;background:var(--green);color:#fff;font-size:0.8rem;margin-top:5px;}
 </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>Springer-Dispo Pro v47.3</h2>
+    <h2>Springer-Dispo Pro v48.0</h2>
     
-    <label>Einrichtung</label>
+    <label>Einrichtung / Ziel</label>
     <select id="schoolSelect" onchange="if(this.value)document.getElementById('startPlz').value=this.value">
         <option value="">-- Bitte wählen --</option>
         <option value="30655">Albert-Liebmann-Schule (30655)</option>
         <option value="30165">Lebenshilfe Büttnerstraße (30165)</option>
-        <option value="30900">Kindergarten Domino (30900)</option>
-        <option value="30880">Freie Martinschule (30880)</option>
-        <option value="30851">Kindergarten Langenhagen (30851)</option>
         <option value="30853">Gutzmann Schule (30853)</option>
-        <option value="30926">Anne Frank Schule (30926)</option>
         <option value="30827">Ilmasi Schule (30827)</option>
         <option value="31535">Michael-Ende-Schule (31535)</option>
-        <option value="31303">Schule am Wasserwerk (31303)</option>
-        <option value="31319">Schule im Großen Freien (31319)</option>
-        <option value="30419">Peter-Cushing-Schule (30419)</option>
-    </select>
+        </select>
 
     <label>PLZ Startpunkt</label>
     <input id="startPlz" value="30159">
@@ -56,112 +53,149 @@ button{width:100%;padding:15px;border-radius:12px;border:none;cursor:pointer;fon
         <div><label>Bis</label><input type="date" id="dateTo" value="2026-04-30"></div>
     </div>
 
-    <button class="main-btn" onclick="run()">Abfrage starten</button>
-    <button onclick="setup()">⚙️ Setup (Keys)</button>
-    <div id="log" class="log">Warte auf Start...</div>
+    <button class="main-btn" onclick="run()">Verfügbarkeit prüfen (Wochenansicht)</button>
+    <button onclick="setup()" style="width:100%;background:#eee;padding:10px;margin-top:8px;">⚙️ Setup</button>
+    <div id="log" class="log">Bereit.</div>
 </div>
 
 <div id="results"></div>
 
+<div id="bookingModal" class="modal-overlay">
+    <div class="modal-box">
+        <h3>Tour buchen</h3>
+        <input type="text" id="popDriver" readonly style="background:#f3f4f6;margin-bottom:10px;">
+        <div class="row">
+            <select id="nameSelect"><option value="">-- Melder --</option><option value="Angela">Angela</option><option value="Klaus">Klaus</option></select>
+            <select id="tourSelect"><option value="">-- Tour --</option></select>
+        </div>
+        <textarea id="popDesc" rows="2" placeholder="Zusatz-Info" style="margin-top:10px;"></textarea>
+        <div style="margin-top:20px;display:flex;gap:10px;">
+            <button onclick="closeModal()" style="background:#eee;flex:1;padding:12px;">Abbruch</button>
+            <button onclick="confirmBooking()" style="background:var(--blue);color:#fff;flex:2;padding:12px;">Eintragen</button>
+        </div>
+    </div>
+</div>
+
 <script>
 const drivers = [
-    {name:"Aschenbach André",plz:"30989"}, {name:"Ohm Lars",plz:"30559"},
-    {name:"Bachmeier Reinhard",plz:"30659"}, {name:"Isfahan Mozaffaey Hamid",plz:"30519"},
-    {name:"Otto Alexander",plz:"30173"}, {name:"Türkel Tuncer",plz:"30161"},
-    {name:"Schrader Harald",plz:"30880"}, {name:"Neubauer Michael",plz:"30853"},
-    {name:"Ferkau Eckart",plz:"30851"}, {name:"Bethmann Ekkehard",plz:"31535"},
-    {name:"Hauer Frank",plz:"30900"}, {name:"Kruse Jens Roland",plz:"31275"},
-    {name:"Grimpe Dirk",plz:"30827"}, {name:"Häge Klaus Dieter",plz:"30519"},
-    {name:"Von Treskow Albrecht",plz:"30659"}, {name:"Giuseppe Caruso",plz:"30880"},
-    {name:"Popescu Viorel Florinel",plz:"30827"}, {name:"Beka Jonel",plz:"31275"},
-    {name:"Moser Siegfried",plz:"30827"}, {name:"Bodewell Thomas",plz:"30853"}
+    {name:"Aschenbach André",plz:"30989"},{name:"Ohm Lars",plz:"30559"},{name:"Bachmeier Reinhard",plz:"30659"},
+    {name:"Isfahan Mozaffaey Hamid",plz:"30519"},{name:"Otto Alexander",plz:"30173"},{name:"Türkel Tuncer",plz:"30161"},
+    {name:"Schrader Harald",plz:"30880"},{name:"Neubauer Michael",plz:"30853"},{name:"Ferkau Eckart",plz:"30851"},
+    {name:"Bethmann Ekkehard",plz:"31535"},{name:"Hauer Frank",plz:"30900"},{name:"Kruse Jens Roland",plz:"31275"},
+    {name:"Grimpe Dirk",plz:"30827"},{name:"Häge Klaus Dieter",plz:"30519"},{name:"Von Treskow Albrecht",plz:"30659"},
+    {name:"Giuseppe Caruso",plz:"30880"},{name:"Popescu Viorel Florinel",plz:"30827"},{name:"Beka Jonel",plz:"31275"},
+    {name:"Moser Siegfried",plz:"30827"},{name:"Bodewell Thomas",plz:"30853"}
 ];
 
-function clean(s){ return (s||"").toLowerCase().replace(/[^a-z0-9]/g,"").trim(); }
+let currentDriverForBooking = "";
+
+window.onload=()=>{
+    const ts=document.getElementById('tourSelect');
+    for(let i=1;i<=40;i++){let o=document.createElement('option');o.value="Tour "+i;o.innerText="Tour "+i;ts.appendChild(o);}
+};
 
 async function run(){
-    const kKey = localStorage.getItem("kKey"), kIds = localStorage.getItem("kIds"), gKey = localStorage.getItem("gKey");
-    if(!kKey || !kIds || !gKey) return alert("Setup unvollständig!");
-
-    const logger = document.getElementById("log");
-    logger.innerHTML = "⏳ Lade frische Daten...";
+    const kKey=localStorage.getItem("kKey"), kIds=localStorage.getItem("kIds"), gKey=localStorage.getItem("gKey");
+    if(!kKey || !kIds || !gKey) return alert("Setup fehlt!");
     
+    const logger = document.getElementById("log");
+    const from = document.getElementById("dateFrom").value;
+    const to = document.getElementById("dateTo").value;
+    
+    logger.innerHTML = "⏳ Daten werden abgeglichen...";
+    
+    // 1. Alle Events laden
     let allEvents = [];
     for(const id of kIds.split(",")){
-        const url = `https://api.kalender.digital/public/event?calendarId=${id.trim()}&startDate=${dateFrom.value}&endDate=${dateTo.value}T23:59:59&timeZone=Europe/Berlin`;
+        const url=`https://api.kalender.digital/public/event?calendarId=${id.trim()}&startDate=${from}&endDate=${to}T23:59:59`;
         const r = await fetch("https://corsproxy.io/?" + encodeURIComponent(url), {headers:{"X-API-KEY":kKey}});
         const data = await r.json();
         allEvents.push(...(data.events || data || []));
     }
-    
+
+    // 2. Google Maps Distanzen
     await loadGoogle(gKey);
-    const matrix = await getDistances(startPlz.value);
-    
+    const matrix = await getDistances(document.getElementById("startPlz").value);
+
+    // 3. Tage generieren
     let days = [];
-    let cur = new Date(dateFrom.value);
-    let end = new Date(dateTo.value);
-    while(cur <= end){
-        days.push(cur.toISOString().split('T')[0]);
-        cur.setDate(cur.getDate() + 1);
-    }
+    let cur = new Date(from);
+    let end = new Date(to);
+    while(cur <= end){ days.push(cur.toISOString().split('T')[0]); cur.setDate(cur.getDate()+1); }
 
+    // 4. Fahrer-Matrix berechnen
     let ranking = drivers.map((d, i) => {
-        const dayStates = days.map(day => {
-            let blocker = null;
-            const isBusy = allEvents.some(ev => {
-                const title = clean(ev.title);
-                const subCal = clean((ev.subCalendars || []).join(" "));
-                const lastName = clean(d.name.split(" ")[0]);
-                
-                if(!(title.includes(lastName) || subCal.includes(lastName))) return false;
-
-                // STRENGER DATUMS-VERGLEICH
-                const start = ev.startDate.split(" ")[0];
-                const end = ev.endDate.split(" ")[0];
-                
-                // Ein Tag ist nur belegt, wenn das Datum exakt übereinstimmt 
-                // oder der Zeitraum den Tag wirklich einschließt.
-                const match = (day >= start && day <= end);
-                
-                if(match) blocker = ev.title;
-                return match;
+        const lastName = d.name.split(" ")[0].toLowerCase();
+        const states = days.map(day => {
+            const ev = allEvents.find(e => {
+                const title = (e.title || "").toLowerCase();
+                const sub = (e.subCalendars || []).join(" ").toLowerCase();
+                const inRange = (day >= e.startDate.split(" ")[0] && day <= e.endDate.split(" ")[0]);
+                return inRange && (title.includes(lastName) || sub.includes(lastName));
             });
-            return { day, isBusy, blocker };
+            return { day, busy: !!ev, title: ev ? ev.title : "Frei" };
         });
 
-        const freeCount = dayStates.filter(s => !s.isBusy).length;
-        const el = matrix.rows[i].elements[0];
-        return { ...d, dayStates, freeCount, distText: el.status==="OK"?el.distance.text:"-", distVal: el.status==="OK"?el.distance.value:999999 };
+        const freeCount = states.filter(s => !s.busy).length;
+        const dist = matrix.rows[i].elements[0];
+        
+        return {
+            ...d, 
+            states, 
+            freeCount, 
+            distText: dist.status==="OK" ? dist.distance.text : "-",
+            distVal: dist.status==="OK" ? dist.distance.value : 999999
+        };
     });
 
+    // Sortierung: Meiste freie Tage zuerst, dann Entfernung
     ranking.sort((a,b) => (b.freeCount - a.freeCount) || (a.distVal - b.distVal));
+    
     render(ranking);
-    logger.innerHTML = "✅ Abfrage beendet. Termine wurden tagesgenau geprüft.";
+    logger.innerHTML = "✅ Abgleich abgeschlossen.";
 }
 
 function render(list){
     document.getElementById("results").innerHTML = list.map(d => {
-        let cls = d.freeCount === 0 ? "full" : (d.freeCount === d.dayStates.length ? "good" : "mid");
-        return `<div class="driver ${cls}">
+        let cls = d.freeCount === d.states.length ? "all-free" : (d.freeCount === 0 ? "full-busy" : "part-free");
+        return `
+        <div class="driver ${cls}">
             <div>
-                <div class="name"><strong>${d.name}</strong></div>
-                <div class="daybar">${d.dayStates.map(s => `<div class="day ${s.isBusy?'busy':'free'}" title="${s.blocker||'Frei'}">${s.day.split("-")[2]}</div>`).join("")}</div>
+                <strong>${d.name}</strong> <small>(${d.distText})</small>
+                <div class="day-strip">
+                    ${d.states.map(s => `<div class="day-box ${s.busy?'day-busy':'day-free'}" title="${s.title}">${s.day.split("-")[2]}</div>`).join("")}
+                </div>
+                <button class="book-btn" onclick="openModal('${d.name}')">Tour buchen</button>
             </div>
-            <div style="text-align:right"><strong>${d.distText}</strong><br><small>Frei: ${d.freeCount}/${d.dayStates.length}</small></div>
+            <div class="right">
+                <span style="font-size:0.7rem; color:#666;">Verfügbar:</span><br>
+                ${d.freeCount} / ${d.states.length} Tg.
+            </div>
         </div>`;
     }).join("");
 }
 
+// Hilfsfunktionen (Google, Modal, etc.)
 function loadGoogle(k){ return new Promise(res => { if(window.google) return res(); const s=document.createElement("script"); s.src=`https://maps.googleapis.com/maps/api/js?key=${k}`; s.onload=res; document.head.appendChild(s); }); }
 function getDistances(dest){ return new Promise(res => { new google.maps.DistanceMatrixService().getDistanceMatrix({origins:drivers.map(d=>d.plz),destinations:[dest],travelMode:'DRIVING'}, r => res(r)); }); }
-function setup(){
-    const kKey = prompt("Kalender Key:", localStorage.getItem("kKey")||"");
-    const kIds = prompt("Kalender IDs:", localStorage.getItem("kIds")||"");
-    const gKey = prompt("Google Key:", localStorage.getItem("gKey")||"");
-    if(kKey) localStorage.setItem("kKey", kKey);
-    if(kIds) localStorage.setItem("kIds", kIds);
-    if(gKey) localStorage.setItem("gKey", gKey);
-    location.reload();
+function setup(){ localStorage.setItem("kKey", prompt("API Key:")); localStorage.setItem("kIds", prompt("Kalender IDs:")); localStorage.setItem("gKey", prompt("Google Key:")); location.reload(); }
+function openModal(name){ currentDriverForBooking = name; document.getElementById('popDriver').value = name; document.getElementById('bookingModal').style.display = 'flex'; }
+function closeModal(){ document.getElementById('bookingModal').style.display = 'none'; }
+
+async function confirmBooking(){
+    const kKey=localStorage.getItem("kKey"), from=document.getElementById("dateFrom").value, to=document.getElementById("dateTo").value;
+    const desc = document.getElementById('popDesc').value + " (" + document.getElementById('nameSelect').value + ")";
+    const school = document.getElementById('schoolSelect').selectedOptions[0].text;
+    
+    const payload = {
+        startDate: `${from} 00:00:00`, endDate: `${to} 23:59:59`,
+        title: school, description: desc, wholeDay: true, subCalendars: [currentDriverForBooking]
+    };
+    
+    closeModal();
+    const proxy = "https://corsproxy.io/?" + encodeURIComponent("https://api.kalender.digital/public/event");
+    const r = await fetch(proxy, { method:"POST", headers:{"Content-Type":"application/json","X-API-KEY":kKey}, body:JSON.stringify(payload) });
+    if(r.ok){ alert("Gebucht!"); run(); }
 }
 </script>
 </body>
