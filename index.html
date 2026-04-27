@@ -3,18 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Springer-Dispo Pro v45.13 STABLE FIX</title>
+<title>Springer-Dispo Pro v46 FINAL</title>
 
 <style>
 :root{
 --blue:#2563eb;
+--blue2:#1d4ed8;
 --green:#16a34a;
 --red:#dc2626;
 --orange:#f59e0b;
 --bg:#eef2f7;
 --card:#ffffff;
---text:#111827;
 --line:#dbe3ee;
+--text:#111827;
+--muted:#6b7280;
 }
 
 *{box-sizing:border-box}
@@ -22,39 +24,47 @@
 body{
 margin:0;
 padding:20px;
-font-family:Arial,Helvetica,sans-serif;
+font-family:Segoe UI,Arial,sans-serif;
 background:linear-gradient(135deg,#eef2f7,#dbeafe);
 color:var(--text);
 }
 
 .card{
-max-width:950px;
+max-width:980px;
 margin:auto;
-background:var(--card);
-padding:24px;
-border-radius:22px;
-box-shadow:0 18px 45px rgba(0,0,0,.10);
+background:rgba(255,255,255,.96);
+padding:26px;
+border-radius:24px;
+box-shadow:0 20px 50px rgba(0,0,0,.08);
 }
 
 h2{
 margin:0 0 18px;
 text-align:center;
 color:var(--blue);
+font-size:1.9rem;
 }
 
 label{
 display:block;
-margin:10px 0 6px;
+margin:12px 0 6px;
 font-weight:700;
 font-size:.92rem;
 }
 
 input,select,textarea{
 width:100%;
-padding:11px;
+padding:12px;
 border:1px solid var(--line);
 border-radius:12px;
 font-size:1rem;
+background:#fff;
+}
+
+input:focus,select:focus,textarea:focus{
+outline:none;
+border-color:var(--blue);
+box-shadow:0 0 0 3px rgba(37,99,235,.12);
 }
 
 .row{
@@ -63,21 +73,33 @@ grid-template-columns:1fr 1fr;
 gap:14px;
 }
 
+.inline{
+display:flex;
+align-items:center;
+gap:10px;
+margin-top:10px;
+}
+
+.inline input{
+width:auto;
+transform:scale(1.2);
+}
+
 button{
 border:none;
 border-radius:12px;
 cursor:pointer;
 font-weight:700;
-transition:.15s;
+transition:.2s;
 }
 
 button:hover{transform:translateY(-1px)}
 
 .main-btn{
 width:100%;
-padding:14px;
-margin-top:16px;
-background:var(--blue);
+padding:15px;
+margin-top:15px;
+background:linear-gradient(135deg,var(--blue),var(--blue2));
 color:#fff;
 font-size:1rem;
 }
@@ -86,90 +108,101 @@ font-size:1rem;
 width:100%;
 padding:11px;
 margin-top:10px;
-background:#edf2f7;
-}
-
-.book-btn{
-padding:9px 14px;
-background:var(--green);
-color:#fff;
-margin-top:8px;
-}
-
-.del-btn{
-padding:9px 14px;
-background:#fff;
-color:var(--red);
-border:1px solid #fecaca;
-margin-top:8px;
+background:#f3f4f6;
 }
 
 .log{
-margin-top:15px;
-padding:12px;
+margin-top:14px;
+padding:14px;
 background:#0f172a;
 color:#4ade80;
-font-family:monospace;
-border-radius:12px;
+font-family:Consolas,monospace;
+border-radius:14px;
 font-size:.84rem;
 min-height:56px;
 white-space:pre-wrap;
 }
 
 #results{
-max-width:950px;
+max-width:980px;
 margin:18px auto;
 }
 
 .driver{
 background:#fff;
-padding:15px;
+padding:16px;
 border-radius:18px;
 margin-bottom:12px;
 display:flex;
 justify-content:space-between;
-gap:16px;
+gap:18px;
 align-items:center;
-box-shadow:0 8px 20px rgba(0,0,0,.06);
+box-shadow:0 8px 20px rgba(0,0,0,.05);
 border-left:8px solid #d1d5db;
 }
 
-.driver.free{border-left-color:var(--green)}
-.driver.partial{border-left-color:var(--orange)}
-.driver.busy{border-left-color:var(--red);background:#fff5f5}
+.driver.good{border-left-color:var(--green)}
+.driver.mid{border-left-color:var(--orange)}
+.driver.full{border-left-color:var(--red);background:#fff7f7}
 
-.day-bar{
-display:flex;
-gap:5px;
-flex-wrap:wrap;
-margin-top:8px;
+.left{
+flex:1;
 }
 
-.day-dot{
-width:25px;
-height:25px;
-border-radius:7px;
+.name{
+font-weight:800;
+font-size:1.03rem;
+}
+
+.meta{
+font-size:.86rem;
+color:var(--muted);
+margin-top:4px;
+}
+
+.daybar{
+display:flex;
+gap:6px;
+margin-top:10px;
+flex-wrap:wrap;
+}
+
+.day{
+width:30px;
+height:30px;
+border-radius:8px;
 display:flex;
 align-items:center;
 justify-content:center;
-font-size:11px;
-font-weight:700;
+font-size:.78rem;
+font-weight:800;
 color:#fff;
 }
 
-.dot-free{background:var(--green)}
-.dot-busy{background:var(--red)}
+.free{background:var(--green)}
+.busy{background:var(--red)}
 
 .right{
-font-weight:800;
-font-size:1.05rem;
-min-width:90px;
+min-width:150px;
 text-align:right;
 }
 
-.small{
-font-size:.84rem;
-color:#6b7280;
+.dist{
+font-size:1.1rem;
+font-weight:800;
+}
+
+.freeinfo{
+margin-top:8px;
+font-size:.9rem;
+font-weight:700;
+}
+
+.book-btn{
+margin-top:10px;
+padding:10px 14px;
+background:linear-gradient(135deg,#16a34a,#15803d);
+color:#fff;
 }
 
 .modal{
@@ -179,23 +212,23 @@ background:rgba(0,0,0,.45);
 display:none;
 justify-content:center;
 align-items:center;
-padding:20px;
+padding:18px;
 z-index:999;
 }
 
 .modal-box{
 background:#fff;
 width:100%;
-max-width:430px;
-padding:22px;
-border-radius:20px;
-box-shadow:0 20px 55px rgba(0,0,0,.18);
+max-width:520px;
+padding:24px;
+border-radius:24px;
+box-shadow:0 25px 60px rgba(0,0,0,.20);
 }
 
 .modal-actions{
 display:flex;
 gap:10px;
-margin-top:15px;
+margin-top:18px;
 }
 
 .cancel-btn{
@@ -207,14 +240,14 @@ background:#e5e7eb;
 .save-btn{
 flex:2;
 padding:12px;
-background:var(--blue);
+background:linear-gradient(135deg,var(--blue),var(--blue2));
 color:#fff;
 }
 
 @media(max-width:760px){
 .row{grid-template-columns:1fr}
 .driver{flex-direction:column;align-items:flex-start}
-.right{text-align:left}
+.right{text-align:left;width:100%}
 }
 </style>
 </head>
@@ -222,11 +255,10 @@ color:#fff;
 
 <div class="card">
 
-<h2>Springer-Dispo Pro v45.13</h2>
+<h2>Springer-Dispo Pro v46 FINAL</h2>
 
 <label>Einrichtung</label>
-<select id="schoolSelect" onchange="if(this.value)startPlz.value=this.value">
-<option value="">-- Wählen --</option>
+<select id="schoolSelect">
 <option value="30655">Albert-Liebmann-Schule (30655)</option>
 <option value="30165">Lebenshilfe Büttnerstraße (30165)</option>
 <option value="30900">Kindergarten Domino (30900)</option>
@@ -247,11 +279,11 @@ color:#fff;
 <div class="row">
 <div>
 <label>Von</label>
-<input type="date" id="dateFrom">
+<input type="date" id="dateFrom" value="2026-04-27">
 </div>
 <div>
 <label>Bis</label>
-<input type="date" id="dateTo">
+<input type="date" id="dateTo" value="2026-04-30">
 </div>
 </div>
 
@@ -264,10 +296,11 @@ color:#fff;
 
 <div id="results"></div>
 
+<!-- Popup -->
 <div class="modal" id="bookModal">
 <div class="modal-box">
 
-<h3 style="margin-top:0">Fahrer buchen</h3>
+<h3 style="margin-top:0;">Fahrer buchen</h3>
 
 <label>Fahrer</label>
 <input id="popDriver" readonly>
@@ -277,7 +310,7 @@ color:#fff;
 
 <div class="modal-actions">
 <button class="cancel-btn" onclick="closeModal()">Abbruch</button>
-<button class="save-btn" onclick="confirmBooking()">Buchen</button>
+<button class="save-btn" onclick="confirmBooking()">Eintragen</button>
 </div>
 
 </div>
@@ -310,8 +343,8 @@ const drivers = [
 let loadedEvents=[];
 let currentDriver="";
 
-function clean(t){
-return (t||"")
+function clean(s){
+return (s||"")
 .toLowerCase()
 .normalize("NFD")
 .replace(/[\u0300-\u036f]/g,"")
@@ -319,14 +352,26 @@ return (t||"")
 }
 
 function setup(){
-localStorage.setItem("kKey",prompt("API Key:",localStorage.getItem("kKey")||""));
+localStorage.setItem("kKey",prompt("Kalender API Key:",localStorage.getItem("kKey")||""));
 localStorage.setItem("kIds",prompt("Kalender IDs:",localStorage.getItem("kIds")||""));
-localStorage.setItem("gKey",prompt("Google Key:",localStorage.getItem("gKey")||""));
+localStorage.setItem("gKey",prompt("Google API Key:",localStorage.getItem("gKey")||""));
 location.reload();
 }
 
 function log(t){
 document.getElementById("log").textContent=t;
+}
+
+function getDateRange(start,end){
+let arr=[];
+let d=new Date(start+"T00:00:00");
+let e=new Date(end+"T00:00:00");
+
+while(d<=e){
+arr.push(d.toISOString().split("T")[0]);
+d.setDate(d.getDate()+1);
+}
+return arr;
 }
 
 async function run(){
@@ -335,33 +380,40 @@ const kKey=localStorage.getItem("kKey");
 const kIds=localStorage.getItem("kIds");
 const gKey=localStorage.getItem("gKey");
 
-if(!kKey||!kIds||!gKey) return alert("Bitte Setup ausfüllen.");
+if(!kKey || !kIds || !gKey){
+alert("Bitte Setup ausfüllen.");
+return;
+}
 
-log("⏳ Lade Kalenderdaten...");
-loadedEvents=await loadEvents(dateFrom.value,dateTo.value,kIds,kKey);
+const from=dateFrom.value;
+const to=dateTo.value;
+const start=startPlz.value;
 
+log("📅 Lade Kalender...");
+loadedEvents=await loadEvents(from,to,kIds,kKey);
+
+log("🗺️ Berechne Strecken...");
 await loadGoogle(gKey);
-const matrix=await getDistances(startPlz.value);
+const matrix=await getDistances(start);
 
-const range=getDateRange(dateFrom.value,dateTo.value);
+const days=getDateRange(from,to);
 
 let ranking=drivers.map((d,i)=>{
 
-const dayStates=range.map(day=>{
-const busy=loadedEvents.some(ev=>eventMatches(ev,d.name,day));
-return {date:day,busy:busy};
+const dayStates=days.map(day=>{
+return isDriverBusyOnDate(d.name,day,loadedEvents);
 });
 
 const freeCount=dayStates.filter(x=>!x.busy).length;
 
-const dist=matrix.rows[i].elements[0];
+const el=matrix.rows[i].elements[0];
 
-return {
+return{
 ...d,
 dayStates,
 freeCount,
-distText:dist.status==="OK"?dist.distance.text:"-",
-distVal:dist.status==="OK"?dist.distance.value:999999
+distText:el.status==="OK"?el.distance.text:"-",
+distVal:el.status==="OK"?el.distance.value:999999
 };
 });
 
@@ -369,29 +421,24 @@ ranking.sort((a,b)=>(b.freeCount-a.freeCount)||(a.distVal-b.distVal));
 
 render(ranking);
 
-log("✅ Aktualisiert.");
+log("✅ Fertig.");
 
 }catch(e){
 log("❌ "+e.message);
 }
 }
 
-async function loadEvents(from,to,ids,key){
+async function loadEvents(from,to,kIds,kKey){
 let all=[];
 
-for(const raw of ids.split(",")){
+for(const raw of kIds.split(",")){
 const id=raw.trim();
 
-const url=`https://api.kalender.digital/public/event?calendarId=${id}&startDate=${from}&endDate=${to}T23:59:59&timeZone=Europe/Berlin&_=${Date.now()}${Math.random()}`;
+const url=`https://api.kalender.digital/public/event?calendarId=${id}&startDate=${from}&endDate=${to}T23:59:59&timeZone=Europe/Berlin&_=${Date.now()}`;
 
 const proxy="https://corsproxy.io/?"+encodeURIComponent(url);
 
-const r=await fetch(proxy,{
-headers:{
-"X-API-KEY":key,
-"Cache-Control":"no-cache"
-}
-});
+const r=await fetch(proxy,{headers:{"X-API-KEY":kKey}});
 
 if(!r.ok) continue;
 
@@ -404,30 +451,120 @@ else if(Array.isArray(data.events)) all.push(...data.events);
 return all;
 }
 
-function eventMatches(ev,driverName,day){
+function isDriverBusyOnDate(driverName,date,events){
 
-const sub=(ev.subCalendars||[]).join(" ");
-const a=clean(sub);
-const b=clean(driverName);
+const search=clean(driverName);
 
-if(!a.includes(b)) return false;
+for(const ev of events){
+
+const names=clean((ev.subCalendars||[]).join(" "));
+if(!names.includes(search)) continue;
 
 const start=(ev.startDate||"").split(" ")[0];
 const end=(ev.endDate||"").split(" ")[0];
 
-return day>=start && day<=end;
+if(date>=start && date<=end){
+return {busy:true,date};
+}
 }
 
-function getDateRange(from,to){
-let arr=[];
-let d=new Date(from);
-let end=new Date(to);
-
-while(d<=end){
-arr.push(d.toISOString().split("T")[0]);
-d.setDate(d.getDate()+1);
+return {busy:false,date};
 }
-return arr;
+
+function render(list){
+
+results.innerHTML=list.map(d=>{
+
+let cls="mid";
+if(d.freeCount===0) cls="full";
+if(d.freeCount===d.dayStates.length) cls="good";
+
+return `
+<div class="driver ${cls}">
+<div class="left">
+
+<div class="name">${d.name}</div>
+<div class="meta">${d.plz}</div>
+
+<div class="daybar">
+${d.dayStates.map(x=>`
+<div class="day ${x.busy?'busy':'free'}">
+${x.date.split("-")[2]}
+</div>
+`).join("")}
+</div>
+
+<div class="freeinfo">
+Freie Tage: ${d.freeCount} / ${d.dayStates.length}
+</div>
+
+${d.freeCount>0?`
+<button class="book-btn" onclick="openModal('${safe(d.name)}')">
+BUCHEN
+</button>`:""}
+
+</div>
+
+<div class="right">
+<div class="dist">${d.distText}</div>
+</div>
+
+</div>
+`;
+
+}).join("");
+}
+
+function safe(t){
+return t.replace(/'/g,"\\'");
+}
+
+function openModal(name){
+currentDriver=name;
+popDriver.value=name;
+bookModal.style.display="flex";
+}
+
+function closeModal(){
+bookModal.style.display="none";
+}
+
+async function confirmBooking(){
+
+try{
+
+const kKey=localStorage.getItem("kKey");
+
+const payload={
+startDate:dateFrom.value+" 00:00:00",
+endDate:dateTo.value+" 23:59:59",
+timeZone:"Europe/Berlin",
+title:schoolSelect.selectedOptions[0].text,
+description:popDesc.value||"",
+wholeDay:true,
+subCalendars:[currentDriver]
+};
+
+const proxy="https://corsproxy.io/?"+encodeURIComponent("https://api.kalender.digital/public/event");
+
+const r=await fetch(proxy,{
+method:"POST",
+headers:{
+"Content-Type":"application/json",
+"X-API-KEY":kKey
+},
+body:JSON.stringify(payload)
+});
+
+if(!r.ok) throw new Error("Buchung fehlgeschlagen");
+
+closeModal();
+await run();
+alert("✅ Eingetragen");
+
+}catch(e){
+alert("❌ "+e.message);
+}
 }
 
 function loadGoogle(key){
@@ -450,101 +587,6 @@ travelMode:"DRIVING"
 },res=>resolve(res));
 });
 }
-
-function render(list){
-results.innerHTML=list.map(d=>{
-
-let cls="busy";
-if(d.freeCount===d.dayStates.length) cls="free";
-else if(d.freeCount>0) cls="partial";
-
-return `
-<div class="driver ${cls}">
-<div>
-<strong>${d.name}</strong>
-<div class="small">${d.freeCount} freie Tage</div>
-
-<div class="day-bar">
-${d.dayStates.map(x=>`
-<div class="day-dot ${x.busy?'dot-busy':'dot-free'}">
-${x.date.split('-')[2]}
-</div>
-`).join("")}
-</div>
-
-${d.freeCount>0?`<button class="book-btn" onclick="openModal('${d.name.replace(/'/g,"\\'")}')">BUCHEN</button>`:""}
-
-</div>
-
-<div class="right">${d.distText}</div>
-</div>
-`;
-}).join("");
-}
-
-function openModal(name){
-currentDriver=name;
-popDriver.value=name;
-bookModal.style.display="flex";
-}
-
-function closeModal(){
-bookModal.style.display="none";
-}
-
-async function confirmBooking(){
-
-const payload={
-startDate:dateFrom.value+" 00:00:00",
-endDate:dateTo.value+" 23:59:59",
-title:schoolSelect.options[schoolSelect.selectedIndex].text,
-description:popDesc.value||"",
-wholeDay:true,
-subCalendars:[currentDriver],
-timeZone:"Europe/Berlin"
-};
-
-const proxy="https://corsproxy.io/?"+encodeURIComponent("https://api.kalender.digital/public/event");
-
-const r=await fetch(proxy,{
-method:"POST",
-headers:{
-"Content-Type":"application/json",
-"X-API-KEY":localStorage.getItem("kKey")
-},
-body:JSON.stringify(payload)
-});
-
-closeModal();
-
-if(r.ok){
-await run();
-alert("Gebucht.");
-}
-}
-
-async function deleteEvent(id){
-
-if(!confirm("Termin löschen?")) return;
-
-const proxy="https://corsproxy.io/?"+encodeURIComponent(`https://api.kalender.digital/public/event/${id}`);
-
-await fetch(proxy,{
-method:"DELETE",
-headers:{
-"X-API-KEY":localStorage.getItem("kKey")
-}
-});
-
-await new Promise(r=>setTimeout(r,800));
-await run();
-}
-
-window.onload=()=>{
-const today=new Date().toISOString().split("T")[0];
-dateFrom.value=today;
-dateTo.value=today;
-};
 </script>
 
 </body>
