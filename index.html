@@ -3,6 +3,556 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Springer-Dispo Pro v45.13 STABLE FIX</title>
+
+<style>
+:root{
+--blue:#2563eb;
+--green:#16a34a;
+--red:#dc2626;
+--orange:#f59e0b;
+--bg:#eef2f7;
+--card:#ffffff;
+--text:#111827;
+--line:#dbe3ee;
+}
+
+*{box-sizing:border-box}
+
+body{
+margin:0;
+padding:20px;
+font-family:Arial,Helvetica,sans-serif;
+background:linear-gradient(135deg,#eef2f7,#dbeafe);
+color:var(--text);
+}
+
+.card{
+max-width:950px;
+margin:auto;
+background:var(--card);
+padding:24px;
+border-radius:22px;
+box-shadow:0 18px 45px rgba(0,0,0,.10);
+}
+
+h2{
+margin:0 0 18px;
+text-align:center;
+color:var(--blue);
+}
+
+label{
+display:block;
+margin:10px 0 6px;
+font-weight:700;
+font-size:.92rem;
+}
+
+input,select,textarea{
+width:100%;
+padding:11px;
+border:1px solid var(--line);
+border-radius:12px;
+font-size:1rem;
+}
+
+.row{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:14px;
+}
+
+button{
+border:none;
+border-radius:12px;
+cursor:pointer;
+font-weight:700;
+transition:.15s;
+}
+
+button:hover{transform:translateY(-1px)}
+
+.main-btn{
+width:100%;
+padding:14px;
+margin-top:16px;
+background:var(--blue);
+color:#fff;
+font-size:1rem;
+}
+
+.setup-btn{
+width:100%;
+padding:11px;
+margin-top:10px;
+background:#edf2f7;
+}
+
+.book-btn{
+padding:9px 14px;
+background:var(--green);
+color:#fff;
+margin-top:8px;
+}
+
+.del-btn{
+padding:9px 14px;
+background:#fff;
+color:var(--red);
+border:1px solid #fecaca;
+margin-top:8px;
+}
+
+.log{
+margin-top:15px;
+padding:12px;
+background:#0f172a;
+color:#4ade80;
+font-family:monospace;
+border-radius:12px;
+font-size:.84rem;
+min-height:56px;
+white-space:pre-wrap;
+}
+
+#results{
+max-width:950px;
+margin:18px auto;
+}
+
+.driver{
+background:#fff;
+padding:15px;
+border-radius:18px;
+margin-bottom:12px;
+display:flex;
+justify-content:space-between;
+gap:16px;
+align-items:center;
+box-shadow:0 8px 20px rgba(0,0,0,.06);
+border-left:8px solid #d1d5db;
+}
+
+.driver.free{border-left-color:var(--green)}
+.driver.partial{border-left-color:var(--orange)}
+.driver.busy{border-left-color:var(--red);background:#fff5f5}
+
+.day-bar{
+display:flex;
+gap:5px;
+flex-wrap:wrap;
+margin-top:8px;
+}
+
+.day-dot{
+width:25px;
+height:25px;
+border-radius:7px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:11px;
+font-weight:700;
+color:#fff;
+}
+
+.dot-free{background:var(--green)}
+.dot-busy{background:var(--red)}
+
+.right{
+font-weight:800;
+font-size:1.05rem;
+min-width:90px;
+text-align:right;
+}
+
+.small{
+font-size:.84rem;
+color:#6b7280;
+}
+
+.modal{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.45);
+display:none;
+justify-content:center;
+align-items:center;
+padding:20px;
+z-index:999;
+}
+
+.modal-box{
+background:#fff;
+width:100%;
+max-width:430px;
+padding:22px;
+border-radius:20px;
+box-shadow:0 20px 55px rgba(0,0,0,.18);
+}
+
+.modal-actions{
+display:flex;
+gap:10px;
+margin-top:15px;
+}
+
+.cancel-btn{
+flex:1;
+padding:12px;
+background:#e5e7eb;
+}
+
+.save-btn{
+flex:2;
+padding:12px;
+background:var(--blue);
+color:#fff;
+}
+
+@media(max-width:760px){
+.row{grid-template-columns:1fr}
+.driver{flex-direction:column;align-items:flex-start}
+.right{text-align:left}
+}
+</style>
+</head>
+<body>
+
+<div class="card">
+
+<h2>Springer-Dispo Pro v45.13</h2>
+
+<label>Einrichtung</label>
+<select id="schoolSelect" onchange="if(this.value)startPlz.value=this.value">
+<option value="">-- Wählen --</option>
+<option value="30655">Albert-Liebmann-Schule (30655)</option>
+<option value="30165">Lebenshilfe Büttnerstraße (30165)</option>
+<option value="30900">Kindergarten Domino (30900)</option>
+<option value="30880">Freie Martinschule (30880)</option>
+<option value="30851">Kindergarten Langenhagen (30851)</option>
+<option value="30629">Kindergarten Misburg (30629)</option>
+<option value="31535">Michael-Ende-Schule (31535)</option>
+<option value="31515">Paul-Moor-Schule (31515)</option>
+<option value="30938">Pestalozzi-Schule (30938)</option>
+<option value="30853">Gutzmann Schule (30853)</option>
+<option value="30926">Anne Frank Schule (30926)</option>
+<option value="30827">Ilmasi Schule (30827)</option>
+</select>
+
+<label>PLZ Start</label>
+<input id="startPlz" value="30159">
+
+<div class="row">
+<div>
+<label>Von</label>
+<input type="date" id="dateFrom">
+</div>
+<div>
+<label>Bis</label>
+<input type="date" id="dateTo">
+</div>
+</div>
+
+<button class="main-btn" onclick="run()">Prüfen & Ranking</button>
+<button class="setup-btn" onclick="setup()">⚙️ Setup</button>
+
+<div id="log" class="log">Bereit.</div>
+
+</div>
+
+<div id="results"></div>
+
+<div class="modal" id="bookModal">
+<div class="modal-box">
+
+<h3 style="margin-top:0">Fahrer buchen</h3>
+
+<label>Fahrer</label>
+<input id="popDriver" readonly>
+
+<label>Beschreibung</label>
+<textarea id="popDesc" rows="3"></textarea>
+
+<div class="modal-actions">
+<button class="cancel-btn" onclick="closeModal()">Abbruch</button>
+<button class="save-btn" onclick="confirmBooking()">Buchen</button>
+</div>
+
+</div>
+</div>
+
+<script>
+const drivers = [
+{name:"Aschenbach André",plz:"30989"},
+{name:"Ohm Lars",plz:"30559"},
+{name:"Bachmeier Reinhard",plz:"30659"},
+{name:"Isfahan Mozaffaey Hamid",plz:"30519"},
+{name:"Otto Alexander",plz:"30173"},
+{name:"Türkel Tuncer",plz:"30161"},
+{name:"Schrader Harald",plz:"30880"},
+{name:"Neubauer Michael",plz:"30853"},
+{name:"Ferkau Eckart",plz:"30851"},
+{name:"Bethmann Ekkehard",plz:"31535"},
+{name:"Hauer Frank",plz:"30900"},
+{name:"Kruse Jens Roland",plz:"31275"},
+{name:"Grimpe Dirk",plz:"30827"},
+{name:"Häge Klaus  Dieter",plz:"30519"},
+{name:"Von Treskow Albrecht",plz:"30659"},
+{name:"Giuseppe Caruso",plz:"30880"},
+{name:"Popescu Viorel Florinel",plz:"30827"},
+{name:"Beka Jonel",plz:"31275"},
+{name:"Moser Siegfried",plz:"30827"},
+{name:"Bodewell Thomas",plz:"30853"}
+];
+
+let loadedEvents=[];
+let currentDriver="";
+
+function clean(t){
+return (t||"")
+.toLowerCase()
+.normalize("NFD")
+.replace(/[\u0300-\u036f]/g,"")
+.replace(/[^a-z0-9]/g,"");
+}
+
+function setup(){
+localStorage.setItem("kKey",prompt("API Key:",localStorage.getItem("kKey")||""));
+localStorage.setItem("kIds",prompt("Kalender IDs:",localStorage.getItem("kIds")||""));
+localStorage.setItem("gKey",prompt("Google Key:",localStorage.getItem("gKey")||""));
+location.reload();
+}
+
+function log(t){
+document.getElementById("log").textContent=t;
+}
+
+async function run(){
+try{
+const kKey=localStorage.getItem("kKey");
+const kIds=localStorage.getItem("kIds");
+const gKey=localStorage.getItem("gKey");
+
+if(!kKey||!kIds||!gKey) return alert("Bitte Setup ausfüllen.");
+
+log("⏳ Lade Kalenderdaten...");
+loadedEvents=await loadEvents(dateFrom.value,dateTo.value,kIds,kKey);
+
+await loadGoogle(gKey);
+const matrix=await getDistances(startPlz.value);
+
+const range=getDateRange(dateFrom.value,dateTo.value);
+
+let ranking=drivers.map((d,i)=>{
+
+const dayStates=range.map(day=>{
+const busy=loadedEvents.some(ev=>eventMatches(ev,d.name,day));
+return {date:day,busy:busy};
+});
+
+const freeCount=dayStates.filter(x=>!x.busy).length;
+
+const dist=matrix.rows[i].elements[0];
+
+return {
+...d,
+dayStates,
+freeCount,
+distText:dist.status==="OK"?dist.distance.text:"-",
+distVal:dist.status==="OK"?dist.distance.value:999999
+};
+});
+
+ranking.sort((a,b)=>(b.freeCount-a.freeCount)||(a.distVal-b.distVal));
+
+render(ranking);
+
+log("✅ Aktualisiert.");
+
+}catch(e){
+log("❌ "+e.message);
+}
+}
+
+async function loadEvents(from,to,ids,key){
+let all=[];
+
+for(const raw of ids.split(",")){
+const id=raw.trim();
+
+const url=`https://api.kalender.digital/public/event?calendarId=${id}&startDate=${from}&endDate=${to}T23:59:59&timeZone=Europe/Berlin&_=${Date.now()}${Math.random()}`;
+
+const proxy="https://corsproxy.io/?"+encodeURIComponent(url);
+
+const r=await fetch(proxy,{
+headers:{
+"X-API-KEY":key,
+"Cache-Control":"no-cache"
+}
+});
+
+if(!r.ok) continue;
+
+const data=await r.json();
+
+if(Array.isArray(data)) all.push(...data);
+else if(Array.isArray(data.events)) all.push(...data.events);
+}
+
+return all;
+}
+
+function eventMatches(ev,driverName,day){
+
+const sub=(ev.subCalendars||[]).join(" ");
+const a=clean(sub);
+const b=clean(driverName);
+
+if(!a.includes(b)) return false;
+
+const start=(ev.startDate||"").split(" ")[0];
+const end=(ev.endDate||"").split(" ")[0];
+
+return day>=start && day<=end;
+}
+
+function getDateRange(from,to){
+let arr=[];
+let d=new Date(from);
+let end=new Date(to);
+
+while(d<=end){
+arr.push(d.toISOString().split("T")[0]);
+d.setDate(d.getDate()+1);
+}
+return arr;
+}
+
+function loadGoogle(key){
+return new Promise(resolve=>{
+if(window.google) return resolve();
+
+const s=document.createElement("script");
+s.src=`https://maps.googleapis.com/maps/api/js?key=${key}`;
+s.onload=resolve;
+document.head.appendChild(s);
+});
+}
+
+function getDistances(dest){
+return new Promise(resolve=>{
+new google.maps.DistanceMatrixService().getDistanceMatrix({
+origins:drivers.map(d=>d.plz),
+destinations:[dest],
+travelMode:"DRIVING"
+},res=>resolve(res));
+});
+}
+
+function render(list){
+results.innerHTML=list.map(d=>{
+
+let cls="busy";
+if(d.freeCount===d.dayStates.length) cls="free";
+else if(d.freeCount>0) cls="partial";
+
+return `
+<div class="driver ${cls}">
+<div>
+<strong>${d.name}</strong>
+<div class="small">${d.freeCount} freie Tage</div>
+
+<div class="day-bar">
+${d.dayStates.map(x=>`
+<div class="day-dot ${x.busy?'dot-busy':'dot-free'}">
+${x.date.split('-')[2]}
+</div>
+`).join("")}
+</div>
+
+${d.freeCount>0?`<button class="book-btn" onclick="openModal('${d.name.replace(/'/g,"\\'")}')">BUCHEN</button>`:""}
+
+</div>
+
+<div class="right">${d.distText}</div>
+</div>
+`;
+}).join("");
+}
+
+function openModal(name){
+currentDriver=name;
+popDriver.value=name;
+bookModal.style.display="flex";
+}
+
+function closeModal(){
+bookModal.style.display="none";
+}
+
+async function confirmBooking(){
+
+const payload={
+startDate:dateFrom.value+" 00:00:00",
+endDate:dateTo.value+" 23:59:59",
+title:schoolSelect.options[schoolSelect.selectedIndex].text,
+description:popDesc.value||"",
+wholeDay:true,
+subCalendars:[currentDriver],
+timeZone:"Europe/Berlin"
+};
+
+const proxy="https://corsproxy.io/?"+encodeURIComponent("https://api.kalender.digital/public/event");
+
+const r=await fetch(proxy,{
+method:"POST",
+headers:{
+"Content-Type":"application/json",
+"X-API-KEY":localStorage.getItem("kKey")
+},
+body:JSON.stringify(payload)
+});
+
+closeModal();
+
+if(r.ok){
+await run();
+alert("Gebucht.");
+}
+}
+
+async function deleteEvent(id){
+
+if(!confirm("Termin löschen?")) return;
+
+const proxy="https://corsproxy.io/?"+encodeURIComponent(`https://api.kalender.digital/public/event/${id}`);
+
+await fetch(proxy,{
+method:"DELETE",
+headers:{
+"X-API-KEY":localStorage.getItem("kKey")
+}
+});
+
+await new Promise(r=>setTimeout(r,800));
+await run();
+}
+
+window.onload=()=>{
+const today=new Date().toISOString().split("T")[0];
+dateFrom.value=today;
+dateTo.value=today;
+};
+</script>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Springer-Dispo Pro v45.13 FIX</title>
 
 <style>
