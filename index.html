@@ -3,12 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Springer-Dispo Pro v46.2</title>
+<title>Springer-Dispo Pro v46.3 FINAL</title>
 <style>
-:root{
---blue:#2563eb; --blue2:#1d4ed8; --green:#16a34a; --red:#dc2626;
---orange:#f59e0b; --bg:#eef2f7; --card:#ffffff; --text:#111827; --muted:#6b7280;
-}
+:root{ --blue:#2563eb; --blue2:#1d4ed8; --green:#16a34a; --red:#dc2626; --orange:#f59e0b; --bg:#eef2f7; --card:#ffffff; --text:#111827; --muted:#6b7280; }
 *{box-sizing:border-box}
 body{margin:0;padding:20px;font-family:'Segoe UI',Arial,sans-serif;background:linear-gradient(135deg,#eef2f7,#dbeafe);color:var(--text);}
 .card{max-width:980px;margin:auto;background:rgba(255,255,255,.96);padding:26px;border-radius:24px;box-shadow:0 20px 50px rgba(0,0,0,.08);}
@@ -19,7 +16,7 @@ input,select,textarea{width:100%;padding:12px;border:1px solid #dbe3ee;border-ra
 button{border:none;border-radius:12px;cursor:pointer;font-weight:700;transition:.2s;}
 .main-btn{width:100%;padding:15px;margin-top:15px;background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;font-size:1rem;}
 .setup-btn{width:100%;padding:10px;margin-top:10px;background:#f3f4f6;color:var(--muted);}
-.log{margin-top:14px;padding:12px;background:#0f172a;color:#4ade80;font-family:monospace;border-radius:12px;font-size:.8rem;min-height:45px;}
+.log{margin-top:14px;padding:12px;background:#0f172a;color:#4ade80;font-family:monospace;border-radius:12px;font-size:.8rem;min-height:45px;white-space:pre-wrap;}
 #results{max-width:980px;margin:18px auto;}
 .driver{background:#fff;padding:18px;border-radius:20px;margin-bottom:12px;display:flex;justify-content:space-between;gap:15px;align-items:center;box-shadow:0 8px 20px rgba(0,0,0,.05);border-left:10px solid #d1d5db;}
 .driver.good{border-left-color:var(--green)}
@@ -27,7 +24,7 @@ button{border:none;border-radius:12px;cursor:pointer;font-weight:700;transition:
 .driver.full{border-left-color:var(--red);background:#fff7f7}
 .name{font-weight:800;font-size:1.1rem;margin-bottom:4px;}
 .daybar{display:flex;gap:6px;margin-top:12px;}
-.day{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800;color:#fff;cursor:help;}
+.day{width:35px;height:35px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:800;color:#fff;cursor:help;}
 .free{background:var(--green)}
 .busy{background:var(--red)}
 .dist{font-size:1.2rem;font-weight:800;color:var(--blue);}
@@ -39,7 +36,7 @@ button{border:none;border-radius:12px;cursor:pointer;font-weight:700;transition:
 <body>
 
 <div class="card">
-    <h2>Springer-Dispo Pro v46.2</h2>
+    <h2>Springer-Dispo Pro v46.3</h2>
     
     <label>Einrichtung wählen</label>
     <select id="schoolSelect" onchange="if(this.value) { document.getElementById('startPlz').value=this.value; }">
@@ -56,7 +53,7 @@ button{border:none;border-radius:12px;cursor:pointer;font-weight:700;transition:
         <option value="31303">Schule am Wasserwerk (31303)</option>
     </select>
 
-    <label>PLZ Startpunkt (für Kilometer-Ranking)</label>
+    <label>PLZ Startpunkt</label>
     <input id="startPlz" value="30159">
 
     <div class="row">
@@ -65,25 +62,11 @@ button{border:none;border-radius:12px;cursor:pointer;font-weight:700;transition:
     </div>
 
     <button class="main-btn" onclick="run()">Abfrage starten</button>
-    <button class="setup-btn" onclick="setup()">⚙️ API Einstellungen</button>
-    <div id="log" class="log">Bereit für Analyse...</div>
+    <button class="setup-btn" onclick="setup()">⚙️ Setup</button>
+    <div id="log" class="log">Bereit...</div>
 </div>
 
 <div id="results"></div>
-
-<div class="modal" id="bookModal">
-    <div class="modal-box">
-        <h3 style="margin-top:0">Tour eintragen</h3>
-        <label>Fahrer</label>
-        <input id="popDriver" readonly style="background:#f3f4f6">
-        <label>Infos zur Tour</label>
-        <textarea id="popDesc" rows="3" placeholder="z.B. Angela meldet: Vertretung für Tour XY"></textarea>
-        <div style="display:flex;gap:10px;margin-top:20px;">
-            <button onclick="closeModal()" style="flex:1;background:#eee;padding:12px;">Abbruch</button>
-            <button onclick="confirmBooking()" style="flex:2;background:var(--blue);color:#fff;padding:12px;">Speichern</button>
-        </div>
-    </div>
-</div>
 
 <script>
 const drivers = [
@@ -100,14 +83,13 @@ const drivers = [
 ];
 
 let loadedEvents = [];
-let currentDriverName = "";
 
-function clean(s){
-    return (s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,"");
-}
+function clean(s){ return (s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,""); }
 
+// WICHTIG: Erzeugt eine Liste von Datums-Strings YYYY-MM-DD
 function getDateRange(s, e){
-    let a=[], d=new Date(s+"T00:00:00"), end=new Date(e+"T00:00:00");
+    let a=[], d=new Date(s + "T12:00:00"); // Wir nutzen Mittag, um Zeitzonensprünge zu vermeiden
+    let end=new Date(e + "T12:00:00");
     while(d <= end){ a.push(d.toISOString().split("T")[0]); d.setDate(d.getDate()+1); }
     return a;
 }
@@ -116,10 +98,10 @@ async function run(){
     const kKey=localStorage.getItem("kKey"), kIds=localStorage.getItem("kIds"), gKey=localStorage.getItem("gKey");
     if(!kKey||!kIds||!gKey) return alert("Bitte Setup ausfüllen.");
 
-    log("⏳ Lade Kalenderdaten...");
+    log("⏳ Lade Kalender...");
     loadedEvents = await loadEvents(dateFrom.value, dateTo.value, kIds, kKey);
     
-    log("🗺️ Berechne Distanzen...");
+    log("🗺️ Berechne Ranking...");
     await loadGoogle(gKey);
     const matrix = await getDistances(startPlz.value);
     const days = getDateRange(dateFrom.value, dateTo.value);
@@ -133,13 +115,13 @@ async function run(){
 
     ranking.sort((a,b) => (b.freeCount - a.freeCount) || (a.distVal - b.distVal));
     render(ranking);
-    log("✅ Analyse abgeschlossen.");
+    log("✅ Fertig.");
 }
 
 async function loadEvents(f, t, ids, key){
     let all = [];
     for(const id of ids.split(",")){
-        const url = `https://api.kalender.digital/public/event?calendarId=${id.trim()}&startDate=${f}&endDate=${t}T23:59:59&timeZone=Europe/Berlin&_=${Date.now()}`;
+        const url = `https://api.kalender.digital/public/event?calendarId=${id.trim()}&startDate=${f}&endDate=${t}T23:59:59&timeZone=Europe/Berlin`;
         const r = await fetch("https://corsproxy.io/?" + encodeURIComponent(url), {headers:{"X-API-KEY":key}});
         const data = await r.json();
         all.push(...(data.events || data || []));
@@ -150,15 +132,20 @@ async function loadEvents(f, t, ids, key){
 function checkBusy(driver, day){
     const s = clean(driver);
     for(const ev of loadedEvents){
+        // Prüfe Unterkalender ODER Titel
         const inSub = (ev.subCalendars||[]).some(sc => clean(sc).includes(s));
         const inTitle = clean(ev.title).includes(s);
+        
         if(inSub || inTitle){
+            // Wir nehmen nur das reine Datum (YYYY-MM-DD)
             const start = ev.startDate.split(" ")[0];
             const end = ev.endDate.split(" ")[0];
+            
+            // Wenn der gesuchte 'day' in diesen Zeitraum fällt: Besetzt!
             if(day >= start && day <= end) return {busy:true, reason:ev.title};
         }
     }
-    return {busy:false};
+    return {busy:false, day: day};
 }
 
 function render(list){
@@ -168,14 +155,18 @@ function render(list){
         <div class="driver ${cls}">
             <div>
                 <div class="name">${d.name}</div>
-                <div style="font-size:0.85rem; color:#666">${d.plz}</div>
+                <div style="font-size:0.8rem; color:#666">${d.plz}</div>
                 <div class="daybar">
-                    ${d.dayStates.map((x,idx) => `<div class="day ${x.busy?'busy':'free'}" title="${x.busy?x.reason:'Frei'}">${idx+27}</div>`).join('')}
+                    ${d.dayStates.map(x => {
+                        const tagNum = x.day ? x.day.split("-")[2] : "?";
+                        return `<div class="day ${x.busy?'busy':'free'}" title="${x.busy? 'Termin: ' + x.reason : 'Frei'}">${tagNum}</div>`
+                    }).join('')}
                 </div>
             </div>
             <div style="text-align:right">
                 <div class="dist">${d.distText}</div>
-                ${d.freeCount > 0 ? `<button class="book-btn" onclick="openModal('${d.name.replace(/'/g,"\\'")}')">BUCHEN</button>` : ''}
+                <div style="font-size:0.8rem; margin:5px 0">Frei: ${d.freeCount}/${d.dayStates.length}</div>
+                ${d.freeCount > 0 ? `<button class="book-btn">BUCHEN</button>` : ''}
             </div>
         </div>`;
     }).join("");
@@ -184,21 +175,7 @@ function render(list){
 function loadGoogle(k){ return new Promise(res => { if(window.google) return res(); const s=document.createElement("script"); s.src=`https://maps.googleapis.com/maps/api/js?key=${k}`; s.onload=res; document.head.appendChild(s); }); }
 function getDistances(dest){ return new Promise(res => { new google.maps.DistanceMatrixService().getDistanceMatrix({origins:drivers.map(d=>d.plz),destinations:[dest],travelMode:'DRIVING'}, r => res(r)); }); }
 function log(t){ document.getElementById("log").textContent=t; }
-function setup(){ localStorage.setItem("kKey",prompt("Kalender Key:",localStorage.getItem("kKey")||"")); localStorage.setItem("kIds",prompt("Kalender IDs:",localStorage.getItem("kIds")||"")); localStorage.setItem("gKey",prompt("Google Key:",localStorage.getItem("gKey")||"")); location.reload(); }
-function openModal(n){ currentDriverName=n; popDriver.value=n; bookModal.style.display="flex"; }
-function closeModal(){ bookModal.style.display="none"; }
-
-async function confirmBooking(){
-    const payload = {
-        startDate: dateFrom.value + " 00:00:00", endDate: dateTo.value + " 23:59:59",
-        title: schoolSelect.selectedOptions[0].text, description: popDesc.value,
-        wholeDay: true, subCalendars: [currentDriverName], timeZone: "Europe/Berlin"
-    };
-    const r = await fetch("https://corsproxy.io/?" + encodeURIComponent("https://api.kalender.digital/public/event"), {
-        method:"POST", headers:{"Content-Type":"application/json","X-API-KEY":localStorage.getItem("kKey")}, body:JSON.stringify(payload)
-    });
-    if(r.ok) { closeModal(); run(); alert("✅ Eingetragen!"); }
-}
+function setup(){ localStorage.setItem("kKey",prompt("Key:",localStorage.getItem("kKey")||"")); localStorage.setItem("kIds",prompt("IDs:",localStorage.getItem("kIds")||"")); localStorage.setItem("gKey",prompt("Maps Key:",localStorage.getItem("gKey")||"")); location.reload(); }
 </script>
 </body>
 </html>
