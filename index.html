@@ -3,6 +3,175 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Springer-Dispo Pro v47.0 - Debug Edition</title>
+<style>
+:root{ --blue:#2563eb; --green:#16a34a; --red:#dc2626; --orange:#f59e0b; --text:#111827; }
+body{margin:0;padding:20px;font-family:'Segoe UI',sans-serif;background:#f0f4f8;color:var(--text);}
+.card{max-width:980px;margin:auto;background:#fff;padding:25px;border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,0.1);}
+h2{margin:0;color:var(--blue);text-align:center;}
+label{display:block;margin:10px 0 5px;font-weight:bold;font-size:0.9rem;}
+input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:10px;font-size:1rem;}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:15px;}
+button{width:100%;padding:15px;border-radius:12px;border:none;cursor:pointer;font-weight:bold;margin-top:10px;}
+.main-btn{background:var(--blue);color:#fff;}
+.log{margin-top:15px;padding:10px;background:#1a202c;color:#4ade80;border-radius:10px;font-family:monospace;font-size:0.75rem;max-height:100px;overflow-y:auto;}
+#results{max-width:980px;margin:20px auto;}
+.driver{background:#fff;padding:15px;border-radius:15px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 4px 10px rgba(0,0,0,0.05);border-left:8px solid #ccc;}
+.driver.good{border-left-color:var(--green)}
+.driver.mid{border-left-color:var(--orange)}
+.driver.full{border-left-color:var(--red)}
+.daybar{display:flex;gap:5px;margin-top:10px;}
+.day{width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:bold;color:#fff;}
+.free{background:var(--green)}
+.busy{background:var(--red)}
+</style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Springer-Dispo Pro v47.0</h2>
+    
+    <label>Einrichtung</label>
+    <select id="schoolSelect" onchange="if(this.value)document.getElementById('startPlz').value=this.value">
+        <option value="">-- Bitte wählen --</option>
+        <option value="30655">Albert-Liebmann-Schule (30655)</option>
+        <option value="30165">Lebenshilfe Büttnerstraße (30165)</option>
+        <option value="30900">Kindergarten Domino (30900)</option>
+        <option value="30880">Freie Martinschule (30880)</option>
+        <option value="30851">Kindergarten Langenhagen (30851)</option>
+        <option value="30853">Gutzmann Schule (30853)</option>
+        <option value="30926">Anne Frank Schule (30926)</option>
+        <option value="30827">Ilmasi Schule (30827)</option>
+        <option value="31535">Michael-Ende-Schule (31535)</option>
+        <option value="31303">Schule am Wasserwerk (31303)</option>
+        <option value="31319">Schule im Großen Freien (31319)</option>
+        <option value="30419">Peter-Cushing-Schule (30419)</option>
+        <option value="30625">Karl-König-Schule (30625)</option>
+        <option value="30629">Mira-Lobe-Schule (30629)</option>
+        <option value="30453">Paul-Dohrmann-Schule (30453)</option>
+        <option value="30519">Erich-Kästner-Schule (30519)</option>
+        <option value="30177">Grimm-Schule (30177)</option>
+        <option value="30890">Kiga Barsinghausen (30890)</option>
+        <option value="31515">Kiga Wunstorf (31515)</option>
+    </select>
+
+    <label>PLZ Startpunkt</label>
+    <input id="startPlz" value="30159">
+
+    <div class="row">
+        <div><label>Von</label><input type="date" id="dateFrom" value="2026-04-27"></div>
+        <div><label>Bis</label><input type="date" id="dateTo" value="2026-04-30"></div>
+    </div>
+
+    <button class="main-btn" onclick="run()">Abfrage starten</button>
+    <button onclick="setup()">⚙️ Setup (Keys)</button>
+    <div id="log" class="log">Konsole bereit...</div>
+</div>
+
+<div id="results"></div>
+
+<script>
+const drivers = [
+    {name:"Aschenbach André",plz:"30989"}, {name:"Ohm Lars",plz:"30559"},
+    {name:"Bachmeier Reinhard",plz:"30659"}, {name:"Isfahan Mozaffaey Hamid",plz:"30519"},
+    {name:"Otto Alexander",plz:"30173"}, {name:"Türkel Tuncer",plz:"30161"},
+    {name:"Schrader Harald",plz:"30880"}, {name:"Neubauer Michael",plz:"30853"},
+    {name:"Ferkau Eckart",plz:"30851"}, {name:"Bethmann Ekkehard",plz:"31535"},
+    {name:"Hauer Frank",plz:"30900"}, {name:"Kruse Jens Roland",plz:"31275"},
+    {name:"Grimpe Dirk",plz:"30827"}, {name:"Häge Klaus Dieter",plz:"30519"},
+    {name:"Von Treskow Albrecht",plz:"30659"}, {name:"Giuseppe Caruso",plz:"30880"},
+    {name:"Popescu Viorel Florinel",plz:"30827"}, {name:"Beka Jonel",plz:"31275"},
+    {name:"Moser Siegfried",plz:"30827"}, {name:"Bodewell Thomas",plz:"30853"}
+];
+
+let loadedEvents = [];
+
+function clean(s){ return (s||"").toLowerCase().replace(/[^a-z0-9]/g,"").trim(); }
+
+async function run(){
+    const kKey = localStorage.getItem("kKey"), kIds = localStorage.getItem("kIds"), gKey = localStorage.getItem("gKey");
+    if(!kKey || !kIds || !gKey) return alert("Setup unvollständig!");
+
+    document.getElementById("log").innerHTML = "⏳ Lade Daten...";
+    loadedEvents = await loadEvents(dateFrom.value, dateTo.value, kIds, kKey);
+    
+    await loadGoogle(gKey);
+    const matrix = await getDistances(startPlz.value);
+    
+    let days = [];
+    let cur = new Date(dateFrom.value);
+    let end = new Date(dateTo.value);
+    while(cur <= end){
+        days.push(cur.toISOString().split('T')[0]);
+        cur.setDate(cur.getDate() + 1);
+    }
+
+    let ranking = drivers.map((d, i) => {
+        const dayStates = days.map(day => {
+            let foundEvent = null;
+            const isBusy = loadedEvents.some(ev => {
+                const info = clean((ev.subCalendars || []).join("") + ev.title);
+                const match = info.includes(clean(d.name));
+                const s = ev.startDate.split(" ")[0];
+                const e = ev.endDate.split(" ")[0];
+                const active = match && (day >= s && day <= e);
+                if(active) foundEvent = ev.title;
+                return active;
+            });
+            if(foundEvent && d.name.includes("Bachmeier")) {
+                document.getElementById("log").innerHTML += `<br>Bachmeier belegt am ${day}: ${foundEvent}`;
+            }
+            return { day, isBusy };
+        });
+
+        const freeCount = dayStates.filter(s => !s.isBusy).length;
+        const el = matrix.rows[i].elements[0];
+        return { ...d, dayStates, freeCount, distText: el.status==="OK"?el.distance.text:"-", distVal: el.status==="OK"?el.distance.value:999999 };
+    });
+
+    ranking.sort((a,b) => (b.freeCount - a.freeCount) || (a.distVal - b.distVal));
+    render(ranking);
+}
+
+async function loadEvents(f, t, ids, key){
+    let all = [];
+    for(const id of ids.split(",")){
+        const url = `https://api.kalender.digital/public/event?calendarId=${id.trim()}&startDate=${f}&endDate=${t}T23:59:59&timeZone=Europe/Berlin`;
+        const r = await fetch("https://corsproxy.io/?" + encodeURIComponent(url), {headers:{"X-API-KEY":key}});
+        const data = await r.json();
+        all.push(...(data.events || data || []));
+    }
+    return all;
+}
+
+function render(list){
+    document.getElementById("results").innerHTML = list.map(d => {
+        let cls = d.freeCount === 0 ? "full" : (d.freeCount === d.dayStates.length ? "good" : "mid");
+        return `<div class="driver ${cls}">
+            <div>
+                <div class="name"><strong>${d.name}</strong></div>
+                <div class="daybar">${d.dayStates.map(s => `<div class="day ${s.isBusy?'busy':'free'}">${s.day.split("-")[2]}</div>`).join("")}</div>
+            </div>
+            <div style="text-align:right"><strong>${d.distText}</strong><br><small>Frei: ${d.freeCount}/${d.dayStates.length}</small></div>
+        </div>`;
+    }).join("");
+}
+
+function loadGoogle(k){ return new Promise(res => { if(window.google) return res(); const s=document.createElement("script"); s.src=`https://maps.googleapis.com/maps/api/js?key=${k}`; s.onload=res; document.head.appendChild(s); }); }
+function getDistances(dest){ return new Promise(res => { new google.maps.DistanceMatrixService().getDistanceMatrix({origins:drivers.map(d=>d.plz),destinations:[dest],travelMode:'DRIVING'}, r => res(r)); }); }
+function setup(){
+    localStorage.setItem("kKey", prompt("Kalender Key:", localStorage.getItem("kKey")||""));
+    localStorage.setItem("kIds", prompt("Kalender IDs:", localStorage.getItem("kIds")||""));
+    localStorage.setItem("gKey", prompt("Google Key:", localStorage.getItem("gKey")||""));
+    location.reload();
+}
+</script>
+</body>
+</html><!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Springer-Dispo Pro v46.9 - Final Rescue</title>
 <style>
 :root{ --blue:#2563eb; --blue2:#1d4ed8; --green:#16a34a; --red:#dc2626; --orange:#f59e0b; --bg:#eef2f7; --card:#ffffff; --text:#111827; --muted:#6b7280; }
