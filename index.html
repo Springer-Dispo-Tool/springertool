@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Springer-Dispo Pro v46 FINAL</title>
+<title>Springer-Dispo Pro v46.1 FINAL CLEAN</title>
 
 <style>
 :root{
@@ -14,9 +14,9 @@
 --orange:#f59e0b;
 --bg:#eef2f7;
 --card:#ffffff;
---line:#dbe3ee;
 --text:#111827;
 --muted:#6b7280;
+--line:#e5e7eb;
 }
 
 *{box-sizing:border-box}
@@ -30,59 +30,40 @@ color:var(--text);
 }
 
 .card{
-max-width:980px;
+max-width:920px;
 margin:auto;
 background:rgba(255,255,255,.96);
-padding:26px;
-border-radius:24px;
-box-shadow:0 20px 50px rgba(0,0,0,.08);
+padding:24px;
+border-radius:22px;
+box-shadow:0 18px 50px rgba(0,0,0,.08);
 }
 
 h2{
 margin:0 0 18px;
 text-align:center;
 color:var(--blue);
-font-size:1.9rem;
 }
 
 label{
 display:block;
-margin:12px 0 6px;
+margin:10px 0 6px;
 font-weight:700;
 font-size:.92rem;
 }
 
 input,select,textarea{
 width:100%;
-padding:12px;
+padding:11px;
 border:1px solid var(--line);
 border-radius:12px;
 font-size:1rem;
 background:#fff;
 }
 
-input:focus,select:focus,textarea:focus{
-outline:none;
-border-color:var(--blue);
-box-shadow:0 0 0 3px rgba(37,99,235,.12);
-}
-
 .row{
 display:grid;
 grid-template-columns:1fr 1fr;
 gap:14px;
-}
-
-.inline{
-display:flex;
-align-items:center;
-gap:10px;
-margin-top:10px;
-}
-
-.inline input{
-width:auto;
-transform:scale(1.2);
 }
 
 button{
@@ -111,6 +92,13 @@ margin-top:10px;
 background:#f3f4f6;
 }
 
+.book-btn{
+padding:10px 14px;
+background:var(--green);
+color:#fff;
+margin-top:8px;
+}
+
 .log{
 margin-top:14px;
 padding:14px;
@@ -118,13 +106,13 @@ background:#0f172a;
 color:#4ade80;
 font-family:Consolas,monospace;
 border-radius:14px;
-font-size:.84rem;
+font-size:.85rem;
 min-height:56px;
 white-space:pre-wrap;
 }
 
 #results{
-max-width:980px;
+max-width:920px;
 margin:18px auto;
 }
 
@@ -135,46 +123,35 @@ border-radius:18px;
 margin-bottom:12px;
 display:flex;
 justify-content:space-between;
-gap:18px;
+gap:14px;
 align-items:center;
 box-shadow:0 8px 20px rgba(0,0,0,.05);
 border-left:8px solid #d1d5db;
 }
 
-.driver.good{border-left-color:var(--green)}
-.driver.mid{border-left-color:var(--orange)}
-.driver.full{border-left-color:var(--red);background:#fff7f7}
-
-.left{
-flex:1;
-}
-
-.name{
-font-weight:800;
-font-size:1.03rem;
-}
-
-.meta{
-font-size:.86rem;
-color:var(--muted);
-margin-top:4px;
+.driver.fullfree{border-left-color:var(--green)}
+.driver.partial{border-left-color:var(--orange)}
+.driver.fullbusy{
+border-left-color:var(--red);
+background:#fff7f7;
 }
 
 .daybar{
 display:flex;
-gap:6px;
-margin-top:10px;
+gap:5px;
+margin-top:8px;
 flex-wrap:wrap;
 }
 
 .day{
-width:30px;
-height:30px;
+min-width:28px;
+height:28px;
+padding:0 6px;
 border-radius:8px;
 display:flex;
 align-items:center;
 justify-content:center;
-font-size:.78rem;
+font-size:.75rem;
 font-weight:800;
 color:#fff;
 }
@@ -182,27 +159,17 @@ color:#fff;
 .free{background:var(--green)}
 .busy{background:var(--red)}
 
+.small{
+font-size:.85rem;
+color:var(--muted);
+margin-top:5px;
+}
+
 .right{
-min-width:150px;
+min-width:110px;
 text-align:right;
-}
-
-.dist{
-font-size:1.1rem;
 font-weight:800;
-}
-
-.freeinfo{
-margin-top:8px;
-font-size:.9rem;
-font-weight:700;
-}
-
-.book-btn{
-margin-top:10px;
-padding:10px 14px;
-background:linear-gradient(135deg,#16a34a,#15803d);
-color:#fff;
+font-size:1.05rem;
 }
 
 .modal{
@@ -219,16 +186,15 @@ z-index:999;
 .modal-box{
 background:#fff;
 width:100%;
-max-width:520px;
+max-width:480px;
 padding:24px;
-border-radius:24px;
-box-shadow:0 25px 60px rgba(0,0,0,.20);
+border-radius:22px;
 }
 
 .modal-actions{
 display:flex;
 gap:10px;
-margin-top:18px;
+margin-top:16px;
 }
 
 .cancel-btn{
@@ -240,22 +206,23 @@ background:#e5e7eb;
 .save-btn{
 flex:2;
 padding:12px;
-background:linear-gradient(135deg,var(--blue),var(--blue2));
+background:var(--blue);
 color:#fff;
 }
 
 @media(max-width:760px){
 .row{grid-template-columns:1fr}
 .driver{flex-direction:column;align-items:flex-start}
-.right{text-align:left;width:100%}
+.right{text-align:left}
 }
 </style>
 </head>
+
 <body>
 
 <div class="card">
 
-<h2>Springer-Dispo Pro v46 FINAL</h2>
+<h2>Springer-Dispo Pro v46.1 FINAL CLEAN</h2>
 
 <label>Einrichtung</label>
 <select id="schoolSelect">
@@ -296,7 +263,6 @@ color:#fff;
 
 <div id="results"></div>
 
-<!-- Popup -->
 <div class="modal" id="bookModal">
 <div class="modal-box">
 
@@ -305,7 +271,7 @@ color:#fff;
 <label>Fahrer</label>
 <input id="popDriver" readonly>
 
-<label>Beschreibung</label>
+<label>Info</label>
 <textarea id="popDesc" rows="3"></textarea>
 
 <div class="modal-actions">
@@ -340,15 +306,19 @@ const drivers = [
 {name:"Bodewell Thomas",plz:"30853"}
 ];
 
-let loadedEvents=[];
-let currentDriver="";
+let loadedEvents = [];
+let currentDriver = "";
 
 function clean(s){
-return (s||"")
+return (s || "")
 .toLowerCase()
 .normalize("NFD")
 .replace(/[\u0300-\u036f]/g,"")
 .replace(/[^a-z0-9]/g,"");
+}
+
+function log(t){
+document.getElementById("log").textContent=t;
 }
 
 function setup(){
@@ -358,20 +328,24 @@ localStorage.setItem("gKey",prompt("Google API Key:",localStorage.getItem("gKey"
 location.reload();
 }
 
-function log(t){
-document.getElementById("log").textContent=t;
-}
-
 function getDateRange(start,end){
-let arr=[];
-let d=new Date(start+"T00:00:00");
-let e=new Date(end+"T00:00:00");
+const result=[];
 
-while(d<=e){
-arr.push(d.toISOString().split("T")[0]);
-d.setDate(d.getDate()+1);
+const a=start.split("-");
+const b=end.split("-");
+
+let current=new Date(a[0],a[1]-1,a[2]);
+let last=new Date(b[0],b[1]-1,b[2]);
+
+while(current<=last){
+const y=current.getFullYear();
+const m=String(current.getMonth()+1).padStart(2,"0");
+const d=String(current.getDate()).padStart(2,"0");
+result.push(`${y}-${m}-${d}`);
+current.setDate(current.getDate()+1);
 }
-return arr;
+
+return result;
 }
 
 async function run(){
@@ -380,10 +354,7 @@ const kKey=localStorage.getItem("kKey");
 const kIds=localStorage.getItem("kIds");
 const gKey=localStorage.getItem("gKey");
 
-if(!kKey || !kIds || !gKey){
-alert("Bitte Setup ausfüllen.");
-return;
-}
+if(!kKey || !kIds || !gKey) return alert("Bitte Setup ausfüllen.");
 
 const from=dateFrom.value;
 const to=dateTo.value;
@@ -400,21 +371,35 @@ const days=getDateRange(from,to);
 
 let ranking=drivers.map((d,i)=>{
 
-const dayStates=days.map(day=>{
-return isDriverBusyOnDate(d.name,day,loadedEvents);
+const states=days.map(day=>{
+
+const hit=loadedEvents.find(ev=>{
+
+const evDate=(ev.startDate || "").split(" ")[0];
+if(evDate!==day) return false;
+
+const txt=clean((ev.subCalendars || []).join(" "));
+return txt.includes(clean(d.name));
 });
 
-const freeCount=dayStates.filter(x=>!x.busy).length;
+return {
+date:day,
+busy:!!hit
+};
+});
+
+const freeCount=states.filter(x=>!x.busy).length;
 
 const el=matrix.rows[i].elements[0];
 
 return{
 ...d,
-dayStates,
+states,
 freeCount,
 distText:el.status==="OK"?el.distance.text:"-",
 distVal:el.status==="OK"?el.distance.value:999999
 };
+
 });
 
 ranking.sort((a,b)=>(b.freeCount-a.freeCount)||(a.distVal-b.distVal));
@@ -436,9 +421,9 @@ const id=raw.trim();
 
 const url=`https://api.kalender.digital/public/event?calendarId=${id}&startDate=${from}&endDate=${to}T23:59:59&timeZone=Europe/Berlin&_=${Date.now()}`;
 
-const proxy="https://corsproxy.io/?"+encodeURIComponent(url);
-
-const r=await fetch(proxy,{headers:{"X-API-KEY":kKey}});
+const r=await fetch("https://corsproxy.io/?"+encodeURIComponent(url),{
+headers:{"X-API-KEY":kKey}
+});
 
 if(!r.ok) continue;
 
@@ -451,126 +436,9 @@ else if(Array.isArray(data.events)) all.push(...data.events);
 return all;
 }
 
-function isDriverBusyOnDate(driverName,date,events){
-
-const search=clean(driverName);
-
-for(const ev of events){
-
-const names=clean((ev.subCalendars||[]).join(" "));
-if(!names.includes(search)) continue;
-
-const start=(ev.startDate||"").split(" ")[0];
-const end=(ev.endDate||"").split(" ")[0];
-
-if(date>=start && date<=end){
-return {busy:true,date};
-}
-}
-
-return {busy:false,date};
-}
-
-function render(list){
-
-results.innerHTML=list.map(d=>{
-
-let cls="mid";
-if(d.freeCount===0) cls="full";
-if(d.freeCount===d.dayStates.length) cls="good";
-
-return `
-<div class="driver ${cls}">
-<div class="left">
-
-<div class="name">${d.name}</div>
-<div class="meta">${d.plz}</div>
-
-<div class="daybar">
-${d.dayStates.map(x=>`
-<div class="day ${x.busy?'busy':'free'}">
-${x.date.split("-")[2]}
-</div>
-`).join("")}
-</div>
-
-<div class="freeinfo">
-Freie Tage: ${d.freeCount} / ${d.dayStates.length}
-</div>
-
-${d.freeCount>0?`
-<button class="book-btn" onclick="openModal('${safe(d.name)}')">
-BUCHEN
-</button>`:""}
-
-</div>
-
-<div class="right">
-<div class="dist">${d.distText}</div>
-</div>
-
-</div>
-`;
-
-}).join("");
-}
-
-function safe(t){
-return t.replace(/'/g,"\\'");
-}
-
-function openModal(name){
-currentDriver=name;
-popDriver.value=name;
-bookModal.style.display="flex";
-}
-
-function closeModal(){
-bookModal.style.display="none";
-}
-
-async function confirmBooking(){
-
-try{
-
-const kKey=localStorage.getItem("kKey");
-
-const payload={
-startDate:dateFrom.value+" 00:00:00",
-endDate:dateTo.value+" 23:59:59",
-timeZone:"Europe/Berlin",
-title:schoolSelect.selectedOptions[0].text,
-description:popDesc.value||"",
-wholeDay:true,
-subCalendars:[currentDriver]
-};
-
-const proxy="https://corsproxy.io/?"+encodeURIComponent("https://api.kalender.digital/public/event");
-
-const r=await fetch(proxy,{
-method:"POST",
-headers:{
-"Content-Type":"application/json",
-"X-API-KEY":kKey
-},
-body:JSON.stringify(payload)
-});
-
-if(!r.ok) throw new Error("Buchung fehlgeschlagen");
-
-closeModal();
-await run();
-alert("✅ Eingetragen");
-
-}catch(e){
-alert("❌ "+e.message);
-}
-}
-
 function loadGoogle(key){
 return new Promise(resolve=>{
 if(window.google) return resolve();
-
 const s=document.createElement("script");
 s.src=`https://maps.googleapis.com/maps/api/js?key=${key}`;
 s.onload=resolve;
@@ -587,7 +455,87 @@ travelMode:"DRIVING"
 },res=>resolve(res));
 });
 }
-</script>
 
+function render(list){
+
+results.innerHTML=list.map(d=>{
+
+let cls="partial";
+if(d.freeCount===0) cls="fullbusy";
+if(d.freeCount===d.states.length) cls="fullfree";
+
+return `
+<div class="driver ${cls}">
+<div>
+<strong>${d.name}</strong>
+<div class="small">${d.plz}</div>
+
+<div class="daybar">
+${d.states.map(s=>`
+<div class="day ${s.busy?'busy':'free'}">
+${s.date.split("-")[2]}
+</div>
+`).join("")}
+</div>
+
+<div class="small">Freie Tage: ${d.freeCount}/${d.states.length}</div>
+
+${d.freeCount>0 ? `<button class="book-btn" onclick="openModal('${d.name.replace(/'/g,"\\'")}')">BUCHEN</button>` : ``}
+
+</div>
+
+<div class="right">${d.distText}</div>
+</div>
+`;
+
+}).join("");
+}
+
+function openModal(name){
+currentDriver=name;
+popDriver.value=name;
+bookModal.style.display="flex";
+}
+
+function closeModal(){
+bookModal.style.display="none";
+}
+
+async function confirmBooking(){
+
+try{
+const kKey=localStorage.getItem("kKey");
+
+const payload={
+startDate:dateFrom.value+" 00:00:00",
+endDate:dateTo.value+" 23:59:59",
+timeZone:"Europe/Berlin",
+title:schoolSelect.selectedOptions[0].text,
+description:popDesc.value || "Gebucht",
+wholeDay:true,
+subCalendars:[currentDriver]
+};
+
+const r=await fetch(
+"https://corsproxy.io/?"+encodeURIComponent("https://api.kalender.digital/public/event"),
+{
+method:"POST",
+headers:{
+"Content-Type":"application/json",
+"X-API-KEY":kKey
+},
+body:JSON.stringify(payload)
+});
+
+if(!r.ok) throw new Error("Buchung fehlgeschlagen");
+
+closeModal();
+run();
+
+}catch(e){
+alert("Fehler");
+}
+}
+</script>
 </body>
 </html>
