@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Springer-Dispo Pro v45.3 (Name-Fix)</title>
+<title>Springer-Dispo Pro v45.4 (Strict Name Match)</title>
 
 <style>
 :root{
@@ -46,7 +46,8 @@ button:hover{transform:translateY(-1px);}
 <body>
 
 <div class="card">
-    <h2>Springer-Dispo Pro v45.3</h2>
+    <h2>Springer-Dispo Pro v45.4</h2>
+    
     <label>Einrichtung / Ziel</label>
     <select id="schoolSelect">
         <option value="">-- Einrichtung wählen --</option>
@@ -76,17 +77,17 @@ button:hover{transform:translateY(-1px);}
         <option value="30926">Anne Frank Schule (30926)</option>
     </select>
 
-    <label>PLZ Startpunkt</label>
+    <label>PLZ erstes Kind / Startpunkt</label>
     <input id="startPlz" value="30159">
 
     <div class="row">
-        <div><label>Von</label><input type="date" id="dateFrom" value="2026-04-27"></div>
-        <div><label>Bis</label><input type="date" id="dateTo" value="2026-04-30"></div>
+        <div><label>Von Datum</label><input type="date" id="dateFrom" value="2026-04-27"></div>
+        <div><label>Bis Datum</label><input type="date" id="dateTo" value="2026-04-30"></div>
     </div>
 
     <div class="inline">
         <input type="checkbox" id="wholeDay" checked onchange="toggleTime()">
-        <label for="wholeDay" style="margin:0;">Ganztägig</label>
+        <label for="wholeDay" style="margin:0;">Ganztägig buchen</label>
     </div>
 
     <div class="row" id="timeBox" style="display:none;">
@@ -94,8 +95,8 @@ button:hover{transform:translateY(-1px);}
         <div><label>Endzeit</label><input type="time" id="endTime" value="13:00"></div>
     </div>
 
-    <button class="main-btn" onclick="run()">Verfügbarkeit prüfen & Ranken</button>
-    <button class="setup-btn" onclick="setup()">⚙️ Setup</button>
+    <button class="main-btn" onclick="run()">Verfügbarkeit & Ranking prüfen</button>
+    <button class="setup-btn" onclick="setup()">⚙️ API Einstellungen</button>
     <div id="log" class="log">Bereit.</div>
 </div>
 
@@ -142,7 +143,7 @@ button:hover{transform:translateY(-1px);}
 </div>
 
 <script>
-// Korrigierte Namen laut Kalender-Struktur
+// Exakte Liste aus dem funktionierenden Code übernommen
 const drivers = [
     {name:"Aschenbach André",plz:"30989"},{name:"Ohm Lars",plz:"30559"},{name:"Bachmeier Reinhard",plz:"30659"},
     {name:"Isfahan Mozaffaey Hamid",plz:"30519"},{name:"Otto Alexander",plz:"30173"},{name:"Türkel Tuncer",plz:"30161"},
@@ -178,10 +179,10 @@ function safe(t){return t ? t.replace(/'/g,"\\'") : "";}
 async function run(){
     try{
         const kKey=localStorage.getItem("kKey"), kIds=localStorage.getItem("kIds"), gKey=localStorage.getItem("gKey");
-        if(!kKey || !kIds || !gKey){alert("Setup fehlt.");return;}
+        if(!kKey || !kIds || !gKey){alert("Setup unvollständig.");return;}
         const from=document.getElementById("dateFrom").value, to=document.getElementById("dateTo").value, start=document.getElementById("startPlz").value;
         
-        log("⏳ Abfrage läuft...");
+        log("📅 Lade Kalenderdaten...");
         loadedEvents=await loadEvents(from,to,kIds,kKey);
         await loadGoogle(gKey);
         const matrix=await getDistances(start);
@@ -203,8 +204,8 @@ async function run(){
 
         ranking.sort((a,b) => (b.freeCount - a.freeCount) || (a.distVal - b.distVal));
         render(ranking);
-        log("✅ Fertig.");
-    }catch(e){log("❌ Fehler: "+e.message);}
+        log("✅ Analyse abgeschlossen.");
+    }catch(e){log("❌ "+e.message);}
 }
 
 function getDateRange(start, end) {
@@ -213,9 +214,9 @@ function getDateRange(start, end) {
     return d;
 }
 
-function checkDriverDays(name, range, events) {
-    // Nimmt nur den Nachnamen (erstes Wort) für den Vergleich
-    const lastName = name.split(' ')[0].toLowerCase().trim();
+function checkDriverDays(driverName, range, events) {
+    // Normalisierung für den Vergleich (Entfernt überflüssige Leerzeichen beim Vergleich)
+    const cleanSearchName = driverName.replace(/\s+/g, ' ').toLowerCase().trim();
     
     return range.map(date => {
         const hit = events.find(ev => {
@@ -223,9 +224,8 @@ function checkDriverDays(name, range, events) {
             let nameMatch = false;
             if(ev.subCalendars && Array.isArray(ev.subCalendars)) {
                 nameMatch = ev.subCalendars.some(sc => {
-                    const scLower = sc.toLowerCase();
-                    // Wenn der Nachname im Unterkalender vorkommt -> Treffer
-                    return scLower.includes(lastName);
+                    const cleanScName = sc.replace(/\s+/g, ' ').toLowerCase().trim();
+                    return cleanScName === cleanSearchName;
                 });
             }
             return dateMatch && nameMatch;
@@ -237,7 +237,7 @@ function checkDriverDays(name, range, events) {
 async function loadEvents(from,to,kIds,kKey){
     let all=[];
     for(const id of kIds.split(",")){
-        const url=`https://api.kalender.digital/public/event?calendarId=${id.trim()}&startDate=${from}&endDate=${to}T23:59:59&timeZone=Europe/Berlin`;
+        const url=`https://api.kalender.digital/public/event?calendarId=${id.trim()}&startDate=${from}&endDate=${to}T23:59:59&timeZone=Europe/Berlin&x=${Date.now()}`;
         const r=await fetch("https://corsproxy.io/?"+encodeURIComponent(url),{headers:{"X-API-KEY":kKey}});
         if(r.ok){ const d=await r.json(); all.push(...(Array.isArray(d)?d:(d.events||[]))); }
     }
@@ -264,7 +264,7 @@ function render(list){
         const isFullFree = d.freeCount === d.totalDays;
         const isFullBusy = d.freeCount === 0;
         const stateClass = isFullFree ? 'free' : (isFullBusy ? 'busy' : 'partial');
-        const stateText = isFullFree ? 'VOLL FREI' : (isFullBusy ? 'KEINE ZEIT' : `${d.freeCount}/${d.totalDays} TAGE FREI`);
+        const stateText = isFullFree ? 'KOMPLETT FREI' : (isFullBusy ? 'VOLL BESETZT' : `${d.freeCount}/${d.totalDays} TAGE FREI`);
 
         return `
         <div class="driver ${isFullFree?'full-free':(isFullBusy?'full-busy':'partial-free')}">
