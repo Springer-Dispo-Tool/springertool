@@ -3,46 +3,59 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Springer-Dispo Pro v46.4 REPAIR</title>
+<title>Springer-Dispo Pro v46.5 FINAL REPAIR</title>
 <style>
-:root{ --blue:#2563eb; --green:#16a34a; --red:#dc2626; --orange:#f59e0b; --text:#111827; }
-body{margin:0;padding:20px;font-family:sans-serif;background:#f0f4f8;color:var(--text);}
-.card{max-width:900px;margin:auto;background:#fff;padding:25px;border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,0.1);}
-input,select{width:100%;padding:12px;margin:8px 0;border-radius:10px;border:1px solid #ccc;}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:15px;}
-button{width:100%;padding:15px;border-radius:12px;border:none;cursor:pointer;font-weight:bold;margin-top:10px;}
-.main-btn{background:var(--blue);color:#fff;}
-#results{max-width:900px;margin:20px auto;}
-.driver{background:#fff;padding:15px;border-radius:15px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 4px 10px rgba(0,0,0,0.05);border-left:8px solid #ccc;}
+:root{ --blue:#2563eb; --blue2:#1d4ed8; --green:#16a34a; --red:#dc2626; --orange:#f59e0b; --bg:#eef2f7; --card:#ffffff; --text:#111827; --muted:#6b7280; }
+*{box-sizing:border-box}
+body{margin:0;padding:20px;font-family:'Segoe UI',Arial,sans-serif;background:linear-gradient(135deg,#eef2f7,#dbeafe);color:var(--text);}
+.card{max-width:980px;margin:auto;background:rgba(255,255,255,.96);padding:26px;border-radius:24px;box-shadow:0 20px 50px rgba(0,0,0,.08);}
+h2{margin:0 0 18px;text-align:center;color:var(--blue);font-size:1.8rem;}
+label{display:block;margin:12px 0 6px;font-weight:700;font-size:.9rem;}
+input,select,textarea{width:100%;padding:12px;border:1px solid #dbe3ee;border-radius:12px;font-size:1rem;background:#fff;}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+button{border:none;border-radius:12px;cursor:pointer;font-weight:700;transition:.2s;}
+.main-btn{width:100%;padding:15px;margin-top:15px;background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;font-size:1rem;}
+.setup-btn{width:100%;padding:10px;margin-top:10px;background:#f3f4f6;color:var(--muted);}
+.log{margin-top:14px;padding:12px;background:#0f172a;color:#4ade80;font-family:monospace;border-radius:12px;font-size:.8rem;min-height:45px;white-space:pre-wrap;}
+#results{max-width:980px;margin:18px auto;}
+.driver{background:#fff;padding:18px;border-radius:20px;margin-bottom:12px;display:flex;justify-content:space-between;gap:15px;align-items:center;box-shadow:0 8px 20px rgba(0,0,0,.05);border-left:10px solid #d1d5db;}
 .driver.good{border-left-color:var(--green)}
 .driver.mid{border-left-color:var(--orange)}
-.driver.full{border-left-color:var(--red)}
-.daybar{display:flex;gap:5px;margin-top:10px;}
-.day{width:35px;height:35px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:bold;color:#fff;}
+.driver.full{border-left-color:var(--red);background:#fff7f7}
+.name{font-weight:800;font-size:1.1rem;margin-bottom:4px;}
+.daybar{display:flex;gap:6px;margin-top:12px;}
+.day{width:35px;height:35px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:800;color:#fff;}
 .free{background:var(--green)}
 .busy{background:var(--red)}
-.log{margin-top:15px;padding:10px;background:#1a202c;color:#4ade80;border-radius:10px;font-family:monospace;font-size:0.8rem;}
+.dist{font-size:1.2rem;font-weight:800;color:var(--blue);}
 </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>Springer-Dispo Pro v46.4</h2>
-    <label>Einrichtung</label>
-    <select id="schoolSelect" onchange="document.getElementById('startPlz').value=this.value">
-        <option value="30159">-- Bitte wählen --</option>
+    <h2>Springer-Dispo Pro v46.5</h2>
+    
+    <label>Einrichtung wählen</label>
+    <select id="schoolSelect" onchange="if(this.value) { document.getElementById('startPlz').value=this.value; }">
+        <option value="">-- Bitte wählen --</option>
         <option value="30655">Albert-Liebmann-Schule (30655)</option>
         <option value="30827">Ilmasi Schule (30827)</option>
         <option value="30851">Kiga Langenhagen (30851)</option>
+        <option value="30853">Gutzmann Schule (30853)</option>
+        <option value="31535">Michael-Ende-Schule (31535)</option>
     </select>
-    <input id="startPlz" placeholder="PLZ Start" value="30159">
+
+    <label>PLZ Startpunkt</label>
+    <input id="startPlz" value="30159">
+
     <div class="row">
-        <input type="date" id="dateFrom" value="2026-04-27">
-        <input type="date" id="dateTo" value="2026-04-30">
+        <div><label>Von</label><input type="date" id="dateFrom" value="2026-04-27"></div>
+        <div><label>Bis</label><input type="date" id="dateTo" value="2026-04-30"></div>
     </div>
-    <button class="main-btn" onclick="run()">PRÜFEN</button>
-    <button onclick="setup()">⚙️ SETUP</button>
-    <div id="log" class="log">Bereit.</div>
+
+    <button class="main-btn" onclick="run()">Analyse & Ranking starten</button>
+    <button class="setup-btn" onclick="setup()">⚙️ Setup (API Keys & IDs)</button>
+    <div id="log" class="log">System bereit.</div>
 </div>
 
 <div id="results"></div>
@@ -66,13 +79,20 @@ let loadedEvents = [];
 function clean(s){ return (s||"").toLowerCase().replace(/[^a-z0-9]/g,""); }
 
 async function run(){
-    const kKey=localStorage.getItem("kKey"), kIds=localStorage.getItem("kIds");
-    if(!kKey || !kIds) return alert("Setup fehlt!");
+    const kKey = localStorage.getItem("kKey");
+    const kIds = localStorage.getItem("kIds");
+    const gKey = localStorage.getItem("gKey");
 
-    document.getElementById("log").textContent = "Lade Daten...";
+    if(!kKey || !kIds || !gKey) return alert("Bitte Setup vervollständigen (Alle 3 Felder!)");
+
+    log("⏳ Lade Kalenderdaten...");
     loadedEvents = await loadEvents(dateFrom.value, dateTo.value, kIds, kKey);
     
-    // Einfache Liste der Tage erstellen
+    log("🗺️ Berechne Google Maps Distanzen...");
+    await loadGoogle(gKey);
+    const matrix = await getDistances(startPlz.value);
+    
+    // Datumsliste erzeugen
     let days = [];
     let cur = new Date(dateFrom.value);
     let end = new Date(dateTo.value);
@@ -81,9 +101,8 @@ async function run(){
         cur.setDate(cur.getDate() + 1);
     }
 
-    let html = "";
-    drivers.forEach(d => {
-        let dayStatus = days.map(day => {
+    let ranking = drivers.map((d, i) => {
+        const dayStates = days.map(day => {
             const isBusy = loadedEvents.some(ev => {
                 const names = clean((ev.subCalendars || []).join("") + ev.title);
                 const start = ev.startDate.split(" ")[0];
@@ -93,20 +112,23 @@ async function run(){
             return { day, isBusy };
         });
 
-        let freeCount = dayStatus.filter(s => !s.isBusy).length;
-        let cls = freeCount === days.length ? "good" : (freeCount === 0 ? "full" : "mid");
-
-        html += `<div class="driver ${cls}">
-            <div>
-                <strong>${d.name}</strong>
-                <div class="daybar">${dayStatus.map(s => `<div class="day ${s.isBusy?'busy':'free'}">${s.day.split("-")[2]}</div>`).join("")}</div>
-            </div>
-            <div style="text-align:right">Freie Tage: ${freeCount}</div>
-        </div>`;
+        const freeCount = dayStates.filter(s => !s.isBusy).length;
+        const el = matrix.rows[i].elements[0];
+        
+        return { 
+            ...d, 
+            dayStates, 
+            freeCount, 
+            distText: el.status === "OK" ? el.distance.text : "-", 
+            distVal: el.status === "OK" ? el.distance.value : 999999 
+        };
     });
-    
-    document.getElementById("results").innerHTML = html;
-    document.getElementById("log").textContent = "Fertig.";
+
+    // Sortierung: Meiste freie Tage zuerst, dann nach Distanz
+    ranking.sort((a,b) => (b.freeCount - a.freeCount) || (a.distVal - b.distVal));
+
+    render(ranking);
+    log("✅ Analyse abgeschlossen.");
 }
 
 async function loadEvents(f, t, ids, key){
@@ -117,14 +139,40 @@ async function loadEvents(f, t, ids, key){
             const r = await fetch("https://corsproxy.io/?" + encodeURIComponent(url), {headers:{"X-API-KEY":key}});
             const data = await r.json();
             all.push(...(data.events || data || []));
-        } catch(e) { console.error(e); }
+        } catch(e) { console.error("Fehler bei ID " + id, e); }
     }
     return all;
 }
 
+function render(list){
+    document.getElementById("results").innerHTML = list.map(d => {
+        let cls = d.freeCount === 0 ? "full" : (d.freeCount === d.dayStates.length ? "good" : "mid");
+        return `
+        <div class="driver ${cls}">
+            <div>
+                <div class="name">${d.name}</div>
+                <div style="font-size:0.8rem; color:#666">${d.plz}</div>
+                <div class="daybar">
+                    ${d.dayStates.map(s => `<div class="day ${s.isBusy?'busy':'free'}">${s.day.split("-")[2]}</div>`).join("")}
+                </div>
+            </div>
+            <div style="text-align:right">
+                <div class="dist">${d.distText}</div>
+                <div style="font-size:0.85rem">Frei: ${d.freeCount}/${d.dayStates.length}</div>
+            </div>
+        </div>`;
+    }).join("");
+}
+
+function loadGoogle(k){ return new Promise(res => { if(window.google) return res(); const s=document.createElement("script"); s.src=`https://maps.googleapis.com/maps/api/js?key=${k}`; s.onload=res; document.head.appendChild(s); }); }
+function getDistances(dest){ return new Promise(res => { new google.maps.DistanceMatrixService().getDistanceMatrix({origins:drivers.map(d=>d.plz),destinations:[dest],travelMode:'DRIVING'}, r => res(r)); }); }
+function log(t){ document.getElementById("log").textContent = t; }
+
 function setup(){
-    localStorage.setItem("kKey", prompt("API Key:"));
-    localStorage.setItem("kIds", prompt("Kalender IDs (mit Komma):"));
+    localStorage.setItem("kKey", prompt("1. Kalender API Key:", localStorage.getItem("kKey") || ""));
+    localStorage.setItem("kIds", prompt("2. Kalender IDs (mit Komma getrennt):", localStorage.getItem("kIds") || ""));
+    localStorage.setItem("gKey", prompt("3. Google Maps API Key:", localStorage.getItem("gKey") || ""));
+    alert("Daten gespeichert. Seite wird neu geladen.");
     location.reload();
 }
 </script>
