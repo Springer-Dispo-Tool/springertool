@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Springer-Dispo Pro v47.0 - Debug Edition</title>
+<title>Springer-Dispo Pro v47.1 - Precision Fix</title>
 <style>
 :root{ --blue:#2563eb; --green:#16a34a; --red:#dc2626; --orange:#f59e0b; --text:#111827; }
 body{margin:0;padding:20px;font-family:'Segoe UI',sans-serif;background:#f0f4f8;color:var(--text);}
@@ -14,7 +14,7 @@ input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:10px;fo
 .row{display:grid;grid-template-columns:1fr 1fr;gap:15px;}
 button{width:100%;padding:15px;border-radius:12px;border:none;cursor:pointer;font-weight:bold;margin-top:10px;}
 .main-btn{background:var(--blue);color:#fff;}
-.log{margin-top:15px;padding:10px;background:#1a202c;color:#4ade80;border-radius:10px;font-family:monospace;font-size:0.75rem;max-height:100px;overflow-y:auto;}
+.log{margin-top:15px;padding:10px;background:#1a202c;color:#4ade80;border-radius:10px;font-family:monospace;font-size:0.75rem;max-height:120px;overflow-y:auto;}
 #results{max-width:980px;margin:20px auto;}
 .driver{background:#fff;padding:15px;border-radius:15px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 4px 10px rgba(0,0,0,0.05);border-left:8px solid #ccc;}
 .driver.good{border-left-color:var(--green)}
@@ -29,7 +29,7 @@ button{width:100%;padding:15px;border-radius:12px;border:none;cursor:pointer;fon
 <body>
 
 <div class="card">
-    <h2>Springer-Dispo Pro v47.0</h2>
+    <h2>Springer-Dispo Pro v47.1</h2>
     
     <label>Einrichtung</label>
     <select id="schoolSelect" onchange="if(this.value)document.getElementById('startPlz').value=this.value">
@@ -65,7 +65,7 @@ button{width:100%;padding:15px;border-radius:12px;border:none;cursor:pointer;fon
 
     <button class="main-btn" onclick="run()">Abfrage starten</button>
     <button onclick="setup()">⚙️ Setup (Keys)</button>
-    <div id="log" class="log">Konsole bereit...</div>
+    <div id="log" class="log">Bereit zur Analyse...</div>
 </div>
 
 <div id="results"></div>
@@ -84,16 +84,22 @@ const drivers = [
     {name:"Moser Siegfried",plz:"30827"}, {name:"Bodewell Thomas",plz:"30853"}
 ];
 
-let loadedEvents = [];
-
 function clean(s){ return (s||"").toLowerCase().replace(/[^a-z0-9]/g,"").trim(); }
 
 async function run(){
     const kKey = localStorage.getItem("kKey"), kIds = localStorage.getItem("kIds"), gKey = localStorage.getItem("gKey");
     if(!kKey || !kIds || !gKey) return alert("Setup unvollständig!");
 
-    document.getElementById("log").innerHTML = "⏳ Lade Daten...";
-    loadedEvents = await loadEvents(dateFrom.value, dateTo.value, kIds, kKey);
+    const logger = document.getElementById("log");
+    logger.innerHTML = "⏳ Lade Kalenderdaten...";
+    
+    let allEvents = [];
+    for(const id of kIds.split(",")){
+        const url = `https://api.kalender.digital/public/event?calendarId=${id.trim()}&startDate=${dateFrom.value}&endDate=${dateTo.value}T23:59:59&timeZone=Europe/Berlin`;
+        const r = await fetch("https://corsproxy.io/?" + encodeURIComponent(url), {headers:{"X-API-KEY":kKey}});
+        const data = await r.json();
+        allEvents.push(...(data.events || data || []));
+    }
     
     await loadGoogle(gKey);
     const matrix = await getDistances(startPlz.value);
@@ -108,20 +114,26 @@ async function run(){
 
     let ranking = drivers.map((d, i) => {
         const dayStates = days.map(day => {
-            let foundEvent = null;
-            const isBusy = loadedEvents.some(ev => {
-                const info = clean((ev.subCalendars || []).join("") + ev.title);
-                const match = info.includes(clean(d.name));
+            let blocker = null;
+            const isBusy = allEvents.some(ev => {
+                const title = clean(ev.title);
+                const subCal = clean((ev.subCalendars || []).join(" "));
+                const driverSearch = clean(d.name.split(" ")[0]); // Sucht nach dem Nachnamen
+                
+                // CRITICAL FIX: Ein Termin blockiert NUR, wenn der NAME des Fahrers im Titel oder Unterkalender steht
+                const hasDriverName = title.includes(driverSearch) || subCal.includes(driverSearch);
+                
                 const s = ev.startDate.split(" ")[0];
                 const e = ev.endDate.split(" ")[0];
-                const active = match && (day >= s && day <= e);
-                if(active) foundEvent = ev.title;
-                return active;
+                const inRange = (day >= s && day <= e);
+                
+                if(hasDriverName && inRange) {
+                    blocker = ev.title;
+                    return true;
+                }
+                return false;
             });
-            if(foundEvent && d.name.includes("Bachmeier")) {
-                document.getElementById("log").innerHTML += `<br>Bachmeier belegt am ${day}: ${foundEvent}`;
-            }
-            return { day, isBusy };
+            return { day, isBusy, blocker };
         });
 
         const freeCount = dayStates.filter(s => !s.isBusy).length;
@@ -131,17 +143,7 @@ async function run(){
 
     ranking.sort((a,b) => (b.freeCount - a.freeCount) || (a.distVal - b.distVal));
     render(ranking);
-}
-
-async function loadEvents(f, t, ids, key){
-    let all = [];
-    for(const id of ids.split(",")){
-        const url = `https://api.kalender.digital/public/event?calendarId=${id.trim()}&startDate=${f}&endDate=${t}T23:59:59&timeZone=Europe/Berlin`;
-        const r = await fetch("https://corsproxy.io/?" + encodeURIComponent(url), {headers:{"X-API-KEY":key}});
-        const data = await r.json();
-        all.push(...(data.events || data || []));
-    }
-    return all;
+    logger.innerHTML = "✅ Analyse abgeschlossen.";
 }
 
 function render(list){
@@ -150,7 +152,7 @@ function render(list){
         return `<div class="driver ${cls}">
             <div>
                 <div class="name"><strong>${d.name}</strong></div>
-                <div class="daybar">${d.dayStates.map(s => `<div class="day ${s.isBusy?'busy':'free'}">${s.day.split("-")[2]}</div>`).join("")}</div>
+                <div class="daybar">${d.dayStates.map(s => `<div class="day ${s.isBusy?'busy':'free'}" title="${s.blocker||'Frei'}">${s.day.split("-")[2]}</div>`).join("")}</div>
             </div>
             <div style="text-align:right"><strong>${d.distText}</strong><br><small>Frei: ${d.freeCount}/${d.dayStates.length}</small></div>
         </div>`;
