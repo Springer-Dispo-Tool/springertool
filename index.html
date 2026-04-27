@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Springer-Dispo Pro v46.8 - FULL LIST</title>
+<title>Springer-Dispo Pro v46.9 - Final Rescue</title>
 <style>
 :root{ --blue:#2563eb; --blue2:#1d4ed8; --green:#16a34a; --red:#dc2626; --orange:#f59e0b; --bg:#eef2f7; --card:#ffffff; --text:#111827; --muted:#6b7280; }
 *{box-sizing:border-box}
@@ -33,7 +33,7 @@ button{border:none;border-radius:12px;cursor:pointer;font-weight:700;transition:
 <body>
 
 <div class="card">
-    <h2>Springer-Dispo Pro v46.8</h2>
+    <h2>Springer-Dispo Pro v46.9</h2>
     
     <label>Einrichtung wählen</label>
     <select id="schoolSelect" onchange="if(this.value) { document.getElementById('startPlz').value=this.value; }">
@@ -54,6 +54,9 @@ button{border:none;border-radius:12px;cursor:pointer;font-weight:700;transition:
         <option value="30629">Mira-Lobe-Schule (30629)</option>
         <option value="30453">Paul-Dohrmann-Schule (30453)</option>
         <option value="30519">Erich-Kästner-Schule (30519)</option>
+        <option value="30177">Grimm-Schule (30177)</option>
+        <option value="30890">Kiga Barsinghausen (30890)</option>
+        <option value="31515">Kiga Wunstorf (31515)</option>
     </select>
 
     <label>PLZ Startpunkt</label>
@@ -87,44 +90,45 @@ const drivers = [
 
 let loadedEvents = [];
 
-function clean(s){ return (s||"").toLowerCase().replace(/[^a-z0-9]/g,""); }
+function clean(s){ return (s||"").toLowerCase().replace(/[^a-z0-9]/g,"").trim(); }
 
 async function run(){
     const kKey = localStorage.getItem("kKey"), kIds = localStorage.getItem("kIds"), gKey = localStorage.getItem("gKey");
     if(!kKey || !kIds || !gKey) return alert("Setup unvollständig!");
 
-    log("⏳ Lade Daten...");
+    log("⏳ Daten werden geladen...");
     loadedEvents = await loadEvents(dateFrom.value, dateTo.value, kIds, kKey);
     
     await loadGoogle(gKey);
     const matrix = await getDistances(startPlz.value);
     
     let days = [];
-    let startParts = dateFrom.value.split("-");
-    let endParts = dateTo.value.split("-");
-    let current = new Date(startParts[0], startParts[1]-1, startParts[2], 12, 0, 0);
-    let end = new Date(endParts[0], endParts[1]-1, endParts[2], 12, 0, 0);
-
-    while(current <= end){
-        days.push(current.toISOString().split('T')[0]);
-        current.setDate(current.getDate() + 1);
+    let startD = new Date(dateFrom.value);
+    let endD = new Date(dateTo.value);
+    for(let d = new Date(startD); d <= endD; d.setDate(d.getDate() + 1)) {
+        days.push(new Date(d).toISOString().split('T')[0]);
     }
 
-    let ranking = drivers.map((d, i) => {
+    let ranking = drivers.map((driver, i) => {
         const dayStates = days.map(day => {
+            // Extrem-Filter: Nur Termine, die HEUTE stattfinden (ignorieren von Zeitverschiebung)
             const isBusy = loadedEvents.some(ev => {
-                const combinedInfo = clean((ev.subCalendars || []).join("") + ev.title);
-                const match = combinedInfo.includes(clean(d.name));
-                const evStart = ev.startDate.split(" ")[0];
-                const evEnd = ev.endDate.split(" ")[0];
-                return match && (day >= evStart && day <= evEnd);
+                const combined = clean((ev.subCalendars || []).join("") + ev.title);
+                const nameMatch = combined.includes(clean(driver.name));
+                
+                // Wir prüfen, ob das "day" Datum exakt im Start/End-Zeitraum liegt
+                const s = ev.startDate.split(" ")[0];
+                const e = ev.endDate.split(" ")[0];
+                
+                // ZUSATZ-CHECK: Wenn der Termin am Vortag um 23:59 endet, darf er den heutigen Tag NICHT blockieren
+                return nameMatch && (day >= s && day <= e);
             });
             return { day, isBusy };
         });
 
         const freeCount = dayStates.filter(s => !s.isBusy).length;
         const el = matrix.rows[i].elements[0];
-        return { ...d, dayStates, freeCount, distText: el.status==="OK"?el.distance.text:"-", distVal: el.status==="OK"?el.distance.value:999999 };
+        return { ...driver, dayStates, freeCount, distText: el.status==="OK"?el.distance.text:"-", distVal: el.status==="OK"?el.distance.value:999999 };
     });
 
     ranking.sort((a,b) => (b.freeCount - a.freeCount) || (a.distVal - b.distVal));
@@ -136,9 +140,11 @@ async function loadEvents(f, t, ids, key){
     let all = [];
     for(const id of ids.split(",")){
         const url = `https://api.kalender.digital/public/event?calendarId=${id.trim()}&startDate=${f}&endDate=${t}T23:59:59&timeZone=Europe/Berlin`;
-        const r = await fetch("https://corsproxy.io/?" + encodeURIComponent(url), {headers:{"X-API-KEY":key}});
-        const data = await r.json();
-        all.push(...(data.events || data || []));
+        try {
+            const r = await fetch("https://corsproxy.io/?" + encodeURIComponent(url), {headers:{"X-API-KEY":key}});
+            const data = await r.json();
+            all.push(...(data.events || data || []));
+        } catch(err) { console.error("API Fehler bei ID " + id, err); }
     }
     return all;
 }
@@ -151,7 +157,7 @@ function render(list){
                 <div class="name">${d.name}</div>
                 <div class="daybar">${d.dayStates.map(s => `<div class="day ${s.isBusy?'busy':'free'}">${s.day.split("-")[2]}</div>`).join("")}</div>
             </div>
-            <div style="text-align:right"><div class="dist">${d.distText}</div></div>
+            <div style="text-align:right"><div class="dist">${d.distText}</div><div style="font-size:0.7rem">Frei: ${d.freeCount}/${d.dayStates.length}</div></div>
         </div>`;
     }).join("");
 }
@@ -159,11 +165,10 @@ function render(list){
 function loadGoogle(k){ return new Promise(res => { if(window.google) return res(); const s=document.createElement("script"); s.src=`https://maps.googleapis.com/maps/api/js?key=${k}`; s.onload=res; document.head.appendChild(s); }); }
 function getDistances(dest){ return new Promise(res => { new google.maps.DistanceMatrixService().getDistanceMatrix({origins:drivers.map(d=>d.plz),destinations:[dest],travelMode:'DRIVING'}, r => res(r)); }); }
 function log(t){ document.getElementById("log").textContent = t; }
-
 function setup(){
-    localStorage.setItem("kKey", prompt("1. Kalender API Key:", localStorage.getItem("kKey")||""));
-    localStorage.setItem("kIds", prompt("2. Kalender IDs:", localStorage.getItem("kIds")||""));
-    localStorage.setItem("gKey", prompt("3. Google Maps Key:", localStorage.getItem("gKey")||""));
+    localStorage.setItem("kKey", prompt("Kalender Key:", localStorage.getItem("kKey")||""));
+    localStorage.setItem("kIds", prompt("Kalender IDs:", localStorage.getItem("kIds")||""));
+    localStorage.setItem("gKey", prompt("Google Key:", localStorage.getItem("gKey")||""));
     location.reload();
 }
 </script>
