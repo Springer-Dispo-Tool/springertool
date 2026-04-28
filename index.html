@@ -221,7 +221,7 @@ const defaultMelders={
 "Anja":"4915253221205","Jürgen":"4916222476215","Michael":"491718505569","Bettina":"49151422821554",
 "Steffi":"4915757574231484","Karin":"49157300600878","Nicole":"49151519588867","Ralf":"491756690269",
 "Katja":"4916281816066","Petra":"4915157368832","Reinhard":"4915205421316",
-"Birgit":"","Karin":"","Manuela":"","Marion":"","Sabine":"","Susanne":"","Yildiz":""
+"Birgit":"","Manuela":"","Marion":"","Sabine":"","Susanne":"","Yildiz":""
 };
 
 let melderPhones={};
@@ -352,7 +352,7 @@ if(tour) val+=tour;
 popText.value=val;
 }
 
-function buildWhatsAppUrl(){
+function buildWhatsAppData(){
 const melder=nameSelect.value;
 const phone=melderPhones[melder];
 if(!melder||!phone) return null;
@@ -384,13 +384,24 @@ Info: ${info}
 Viele Grüße
 Reinhard`;
 
-return "https://wa.me/"+phone+"?text="+encodeURIComponent(message);
+return {phone,message};
+}
+
+function openWhatsApp(phone,message){
+const encoded=encodeURIComponent(message);
+const isMobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+if(isMobile){
+window.location.href="whatsapp://send?phone="+phone+"&text="+encoded;
+}else{
+window.open("https://wa.me/"+phone+"?text="+encoded,"_blank");
+}
 }
 
 function sendWhatsApp(){
-const url=buildWhatsAppUrl();
-if(!url){alert("Bitte Melder mit hinterlegter Telefonnummer auswählen.");return;}
-window.open(url,"_blank");
+const data=buildWhatsAppData();
+if(!data){alert("Bitte Melder mit hinterlegter Telefonnummer auswählen.");return;}
+openWhatsApp(data.phone,data.message);
 }
 
 window.onload=()=>{
@@ -597,9 +608,7 @@ if(mode==="new"){
 const selectedDays=[...document.querySelectorAll(".freeDayCheck:checked")].map(x=>x.value);
 if(!selectedDays.length){alert("Bitte mindestens einen freien Tag auswählen.");return}
 
-let waWindow=null;
-const waUrl=buildWhatsAppUrl();
-if(waUrl) waWindow=window.open("about:blank","_blank");
+const waData=buildWhatsAppData();
 
 let ok=0;
 for(const day of selectedDays){
@@ -617,12 +626,14 @@ body:JSON.stringify(payload)
 if(r.ok) ok++;
 }
 
-if(waWindow&&ok>0) waWindow.location.href=waUrl;
-if(waWindow&&ok===0) waWindow.close();
-
 closeModal();
 await run();
 alert(ok+" Termin(e) gebucht.");
+
+if(waData&&ok>0){
+openWhatsApp(waData.phone,waData.message);
+}
+
 return;
 }
 
