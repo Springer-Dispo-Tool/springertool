@@ -3,15 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Springer Dispo</title>
+<title>Meldau DispoManager</title>
 <style>
-:root{--blue:#2563eb;--blue2:#1d4ed8;--green:#16a34a;--red:#dc2626;--orange:#f59e0b;--bg:#eef2f7;--muted:#6b7280}
+:root{--blue:#1d4ed8;--blue2:#2563eb;--green:#16a34a;--red:#dc2626;--orange:#f59e0b;--bg:#eef2f7;--muted:#4b5563}
 *{box-sizing:border-box}
 body{margin:0;padding:20px;font-family:Segoe UI,Arial,sans-serif;background:linear-gradient(135deg,#eef2f7,#dbeafe)}
-.card{max-width:980px;margin:auto;background:#fff;padding:24px;border-radius:24px;box-shadow:0 20px 60px rgba(0,0,0,.08)}
-.header{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:20px}
-.header img{height:52px}.header-title{font-size:1.6rem;font-weight:800;color:var(--blue)}.header-sub{font-size:.85rem;color:var(--muted)}
-label{display:block;margin:10px 0 6px;font-weight:700}
+.card{max-width:980px;margin:auto;background:#fff;padding:26px;border-radius:26px;box-shadow:0 24px 70px rgba(15,23,42,.10)}
+.header{display:flex;align-items:center;justify-content:center;gap:18px;margin-bottom:24px;padding-bottom:18px;border-bottom:1px solid #e5e7eb}
+.header img{height:64px;max-width:180px;object-fit:contain}
+.header-title{font-size:2rem;font-weight:900;color:var(--blue);letter-spacing:-.6px;line-height:1.1}
+.header-sub{font-size:1rem;font-weight:700;color:var(--blue2);margin-top:4px}
+label{display:block;margin:10px 0 6px;font-weight:700;color:#111827}
 input,select,textarea{width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:12px;font-size:1rem}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 button{border:none;border-radius:12px;cursor:pointer;font-weight:700}
@@ -36,7 +38,13 @@ button{border:none;border-radius:12px;cursor:pointer;font-weight:700}
 .day-choice{display:flex;align-items:center;gap:8px;background:#f8fafc;border:1px solid #e5e7eb;border-radius:10px;padding:10px;font-weight:700}
 .day-choice input{width:auto}
 .delete-choice{background:#fff7f7;border-color:#fecaca}
-@media(max-width:760px){.row{grid-template-columns:1fr}.driver{flex-direction:column;align-items:flex-start}.right{text-align:left}}
+@media(max-width:760px){
+body{padding:12px}
+.header{flex-direction:column;text-align:center;gap:8px}
+.header img{height:58px}
+.header-title{font-size:1.7rem}
+.row{grid-template-columns:1fr}.driver{flex-direction:column;align-items:flex-start}.right{text-align:left}
+}
 </style>
 </head>
 <body>
@@ -45,8 +53,8 @@ button{border:none;border-radius:12px;cursor:pointer;font-weight:700}
 <div class="header">
 <img src="meldau_transparent_g.svg" alt="Meldau GmbH Logo">
 <div>
-<div class="header-title">Springer Dispo</div>
-<div class="header-sub">Meldau GmbH</div>
+<div class="header-title">Meldau DispoManager</div>
+<div class="header-sub">Springerplanung & Verfügbarkeiten</div>
 </div>
 </div>
 
