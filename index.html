@@ -22,6 +22,7 @@ button{border:none;border-radius:12px;cursor:pointer;font-weight:700}
 .book-btn{padding:10px 14px;background:var(--green);color:#fff;margin:6px 6px 0 0}
 .edit-btn{padding:10px 14px;background:var(--orange);color:#fff;margin:6px 6px 0 0}
 .del-btn{padding:10px 14px;background:#fff;color:var(--red);border:1px solid #fecaca;margin:6px 6px 0 0}
+.wa-btn{background:#25D366;color:#fff}
 .log{margin-top:14px;padding:14px;background:#0f172a;color:#4ade80;font-family:Consolas,monospace;border-radius:14px}
 #results{max-width:980px;margin:18px auto}
 .driver{background:#fff;padding:16px;border-radius:18px;margin-bottom:12px;display:flex;justify-content:space-between;gap:15px;align-items:center;box-shadow:0 8px 20px rgba(0,0,0,.06);border-left:8px solid #d1d5db}
@@ -127,9 +128,9 @@ body{padding:12px}
 <option value="Katja">Katja</option><option value="Kerstin">Kerstin</option><option value="Klaus">Klaus</option>
 <option value="Manuela">Manuela</option><option value="Marion">Marion</option><option value="Michael">Michael</option>
 <option value="Moni">Moni</option><option value="Nicole">Nicole</option><option value="Nina">Nina</option>
-<option value="Petra">Petra</option><option value="Ralf">Ralf</option><option value="Sabine">Sabine</option>
-<option value="Silke">Silke</option><option value="Steffi">Steffi</option><option value="Susanne">Susanne</option>
-<option value="Ute">Ute</option><option value="Yildiz">Yildiz</option>
+<option value="Petra">Petra</option><option value="Ralf">Ralf</option><option value="Reinhard">Reinhard</option>
+<option value="Sabine">Sabine</option><option value="Silke">Silke</option><option value="Steffi">Steffi</option>
+<option value="Susanne">Susanne</option><option value="Ute">Ute</option><option value="Yildiz">Yildiz</option>
 </select>
 </div>
 <div>
@@ -157,6 +158,7 @@ body{padding:12px}
 
 <div style="display:flex;gap:10px;margin-top:16px">
 <button onclick="closeModal()" style="flex:1;background:#eee;padding:12px">Abbruch</button>
+<button onclick="sendWhatsApp()" class="wa-btn" style="flex:1;padding:12px">WhatsApp</button>
 <button onclick="saveModal()" style="flex:2;background:#2563eb;color:#fff;padding:12px">Speichern</button>
 </div>
 </div>
@@ -194,6 +196,10 @@ const drivers=[
 {name:"Beka Jonel",plz:"31275"},{name:"Bodewell Thomas",plz:"30853"}
 ];
 
+const melderPhones = {
+  "Reinhard": "4915205421316"
+};
+
 let loadedEvents=[];
 let mode="new";
 let editId=null;
@@ -228,6 +234,57 @@ let val="";
 if(name) val += name+" meldet sich: ";
 if(tour) val += tour;
 document.getElementById('popText').value=val;
+}
+
+function sendWhatsApp(){
+const melder=document.getElementById("nameSelect").value;
+const phone=melderPhones[melder];
+
+if(!melder){
+alert("Bitte Melder auswählen.");
+return;
+}
+
+if(!phone){
+alert("Für diesen Melder ist keine Telefonnummer hinterlegt.");
+return;
+}
+
+const driver=document.getElementById("popDriver").value;
+const school=document.getElementById("schoolSelect").selectedOptions[0].text;
+const tour=document.getElementById("tourSelect").value || "Tour";
+const info=document.getElementById("popText").value;
+
+const selectedDays=[...document.querySelectorAll(".freeDayCheck:checked")].map(x=>x.value);
+let niceDate="";
+
+if(selectedDays.length===1){
+const d=new Date(selectedDays[0]+"T12:00:00");
+niceDate=d.toLocaleDateString("de-DE");
+}else if(selectedDays.length>1){
+niceDate=selectedDays.map(day=>new Date(day+"T12:00:00").toLocaleDateString("de-DE")).join(", ");
+}else{
+const d=new Date(document.getElementById("dateFrom").value+"T12:00:00");
+niceDate=d.toLocaleDateString("de-DE");
+}
+
+const message=
+`Springer gebucht – ${tour}
+
+Hallo ${melder},
+
+für den ${niceDate} wurde folgender Springer eingetragen:
+
+Fahrer: ${driver}
+Einrichtung: ${school}
+Tour: ${tour}
+Info: ${info}
+
+Viele Grüße
+Reinhard`;
+
+const url="https://wa.me/"+phone+"?text="+encodeURIComponent(message);
+window.open(url,"_blank");
 }
 
 window.onload=()=>{
