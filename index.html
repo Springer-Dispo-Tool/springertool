@@ -186,4 +186,8 @@ async function confirmBooking(){
     const payload = { startDate: `${from} 00:00:00`, endDate: `${to} 23:59:59`, title: school, description: desc, wholeDay: true, subCalendars: [currentDriverForBooking] };
     closeModal();
     const r = await fetch("https://corsproxy.io/?" + encodeURIComponent("https://api.kalender.digital/public/event"), { method:"POST", headers:{"Content-Type":"application/json","X-API-KEY":kKey}, body:JSON.stringify(payload) });
-    if(r.
+    if(r.ok){ alert("Erfolg!"); run(); }
+}
+</script>
+</body>
+</html>
