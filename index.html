@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Springer Dispo V47.1 MASTER FIXED</title>
+<title>Springer Dispo V48 PROFI FINAL</title>
 
 <style>
 :root{
@@ -16,7 +16,9 @@
 --text:#111827;
 --muted:#6b7280;
 }
+
 *{box-sizing:border-box}
+
 body{
 margin:0;
 padding:20px;
@@ -24,6 +26,7 @@ font-family:Segoe UI,Arial,sans-serif;
 background:linear-gradient(135deg,#eef2f7,#dbeafe);
 color:var(--text);
 }
+
 .card{
 max-width:980px;
 margin:auto;
@@ -32,17 +35,20 @@ padding:24px;
 border-radius:24px;
 box-shadow:0 20px 60px rgba(0,0,0,.08);
 }
+
 h2{
 margin:0 0 18px;
 text-align:center;
 color:var(--blue);
 }
+
 label{
 display:block;
-margin:12px 0 6px;
+margin:10px 0 6px;
 font-weight:700;
 font-size:.92rem;
 }
+
 input,select,textarea{
 width:100%;
 padding:12px;
@@ -50,11 +56,13 @@ border:1px solid #e5e7eb;
 border-radius:12px;
 font-size:1rem;
 }
+
 .row{
 display:grid;
 grid-template-columns:1fr 1fr;
 gap:14px;
 }
+
 button{
 border:none;
 border-radius:12px;
@@ -62,27 +70,40 @@ cursor:pointer;
 font-weight:700;
 transition:.15s;
 }
+
 button:hover{transform:translateY(-1px)}
+
 .main-btn{
 width:100%;
 padding:15px;
 margin-top:14px;
 background:linear-gradient(135deg,var(--blue),var(--blue2));
 color:#fff;
-font-size:1rem;
 }
+
 .setup-btn{
 width:100%;
 padding:12px;
 margin-top:10px;
 background:#f3f4f6;
 }
+
 .book-btn{
 padding:10px 14px;
 background:var(--green);
 color:#fff;
 margin-top:8px;
+margin-right:8px;
 }
+
+.del-btn{
+padding:10px 14px;
+background:#fff;
+color:var(--red);
+border:1px solid #fecaca;
+margin-top:8px;
+}
+
 .log{
 margin-top:14px;
 padding:14px;
@@ -94,10 +115,12 @@ font-size:.86rem;
 white-space:pre-wrap;
 min-height:58px;
 }
+
 #results{
 max-width:980px;
 margin:18px auto;
 }
+
 .driver{
 background:#fff;
 padding:16px;
@@ -110,25 +133,18 @@ align-items:center;
 box-shadow:0 8px 20px rgba(0,0,0,.06);
 border-left:8px solid #d1d5db;
 }
+
 .driver.free{border-left-color:var(--green)}
 .driver.partial{border-left-color:var(--orange)}
 .driver.busy{border-left-color:var(--red)}
-.right{
-min-width:140px;
-text-align:right;
-font-weight:800;
-font-size:1.1rem;
-}
-.small{
-font-size:.85rem;
-color:var(--muted);
-}
+
 .daybar{
 display:flex;
 gap:5px;
 margin-top:8px;
 flex-wrap:wrap;
 }
+
 .day{
 width:30px;
 height:30px;
@@ -140,8 +156,40 @@ font-size:.78rem;
 font-weight:800;
 color:#fff;
 }
+
 .freeDay{background:var(--green)}
 .busyDay{background:var(--red)}
+
+.small{
+font-size:.84rem;
+color:var(--muted);
+}
+
+.right{
+min-width:150px;
+text-align:right;
+font-weight:800;
+font-size:1.1rem;
+}
+
+.modal{
+display:none;
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.45);
+justify-content:center;
+align-items:center;
+z-index:9999;
+}
+
+.modal-box{
+background:#fff;
+padding:24px;
+border-radius:22px;
+width:95%;
+max-width:480px;
+}
+
 @media(max-width:760px){
 .row{grid-template-columns:1fr}
 .driver{flex-direction:column;align-items:flex-start}
@@ -153,23 +201,18 @@ color:#fff;
 <body>
 
 <div class="card">
-<h2>Springer Dispo V47.1 MASTER FIXED</h2>
+<h2>Springer Dispo V48 PROFI FINAL</h2>
 
 <label>Einrichtung</label>
-<select id="schoolSelect" onchange="if(this.value)document.getElementById('startPlz').value=this.value">
+<select id="schoolSelect" onchange="if(this.value)startPlz.value=this.value">
 <option value="">-- Wählen --</option>
-<option value="30655">Albert-Liebmann-Schule (30655)</option>
-<option value="30165">Lebenshilfe Büttnerstraße (30165)</option>
-<option value="30900">Kindergarten Domino (30900)</option>
-<option value="30880">Freie Martinschule (30880)</option>
-<option value="30851">Kindergarten Langenhagen (30851)</option>
-<option value="30629">Kindergarten Misburg (30629)</option>
-<option value="31535">Michael-Ende-Schule (31535)</option>
-<option value="31515">Paul-Moor-Schule (31515)</option>
-<option value="30938">Pestalozzi-Schule (30938)</option>
-<option value="30853">Gutzmann Schule (30853)</option>
-<option value="30926">Anne Frank Schule (30926)</option>
-<option value="30827">Ilmasi Schule (30827)</option>
+<option value="30655">Albert-Liebmann-Schule</option>
+<option value="30165">Lebenshilfe Büttnerstraße</option>
+<option value="30900">Kindergarten Domino</option>
+<option value="30880">Freie Martinschule</option>
+<option value="30853">Gutzmann Schule</option>
+<option value="30926">Anne Frank Schule</option>
+<option value="30827">Ilmasi Schule</option>
 </select>
 
 <label>PLZ Start</label>
@@ -178,11 +221,11 @@ color:#fff;
 <div class="row">
 <div>
 <label>Von</label>
-<input type="date" id="dateFrom" value="2026-04-28">
+<input type="date" id="dateFrom">
 </div>
 <div>
 <label>Bis</label>
-<input type="date" id="dateTo" value="2026-04-30">
+<input type="date" id="dateTo">
 </div>
 </div>
 
@@ -194,31 +237,39 @@ color:#fff;
 
 <div id="results"></div>
 
+<div class="modal" id="modal">
+<div class="modal-box">
+
+<h3>Buchung eintragen</h3>
+
+<label>Fahrer</label>
+<input id="popDriver" readonly>
+
+<label>Info</label>
+<textarea id="popText" rows="3"></textarea>
+
+<div style="display:flex;gap:10px;margin-top:14px">
+<button onclick="closeModal()" style="flex:1;background:#eee;padding:12px">Abbruch</button>
+<button onclick="confirmBooking()" style="flex:2;background:#2563eb;color:#fff;padding:12px">Buchen</button>
+</div>
+
+</div>
+</div>
+
 <script>
-const drivers = [
+const drivers=[
 {name:"Aschenbach André",plz:"30989"},
 {name:"Ohm Lars",plz:"30559"},
 {name:"Bachmeier Reinhard",plz:"30659"},
-{name:"Isfahan Mozaffaey Hamid",plz:"30519"},
-{name:"Otto Alexander",plz:"30173"},
-{name:"Türkel Tuncer",plz:"30161"},
-{name:"Schrader Harald",plz:"30880"},
-{name:"Neubauer Michael",plz:"30853"},
-{name:"Ferkau Eckart",plz:"30851"},
-{name:"Bethmann Ekkehard",plz:"31535"},
-{name:"Hauer Frank",plz:"30900"},
 {name:"Kruse Jens Roland",plz:"31275"},
-{name:"Grimpe Dirk",plz:"30827"},
-{name:"Häge Klaus Dieter",plz:"30519"},
-{name:"Von Treskow Albrecht",plz:"30659"},
-{name:"Giuseppe Caruso",plz:"30880"},
-{name:"Popescu Viorel Florinel",plz:"30827"},
-{name:"Beka Jonel",plz:"31275"},
 {name:"Moser Siegfried",plz:"30827"},
-{name:"Bodewell Thomas",plz:"30853"}
+{name:"Türkel Tuncer",plz:"30161"},
+{name:"Ferkau Eckart",plz:"30851"}
 ];
 
 let loadedEvents=[];
+let currentDriver="";
+let currentEventId=null;
 
 function log(t){
 document.getElementById("log").textContent=t;
@@ -239,11 +290,11 @@ return (s||"")
 .replace(/[^a-z0-9]/g,"");
 }
 
-function getDateRange(from,to){
+function getDays(a,b){
 let arr=[];
-let d=new Date(from+"T12:00:00");
-let end=new Date(to+"T12:00:00");
-while(d<=end){
+let d=new Date(a+"T12:00:00");
+let e=new Date(b+"T12:00:00");
+while(d<=e){
 arr.push(d.toISOString().slice(0,10));
 d.setDate(d.getDate()+1);
 }
@@ -265,60 +316,47 @@ else if(Array.isArray(d.events)) all.push(...d.events);
 return all;
 }
 
-function parseDateLocal(s){
-if(!s) return null;
+function owns(driver,ev){
+return clean((ev.subCalendars||[]).join(" ")).includes(clean(driver.name));
+}
+
+function parseDate(s){
 return new Date(s.replace(" ","T"));
 }
 
-/* MASTER FIX:
-Wenn Termin endet exakt 00:00:00,
-dann zählt Endtag NICHT als blockiert.
-*/
-function eventBlocksDay(ev,day){
-const start=parseDateLocal(ev.startDate);
-const end=parseDateLocal(ev.endDate);
-if(!start || !end) return false;
+function blocks(ev,day){
+const start=parseDate(ev.startDate);
+const end=parseDate(ev.endDate);
 
-const dayStart=new Date(day+"T00:00:00");
-const nextDay=new Date(day+"T24:00:00");
+const ds=new Date(day+"T00:00:00");
+const nx=new Date(day+"T24:00:00");
 
-let effectiveEnd=new Date(end);
+let ee=new Date(end);
 
-/* Mitternacht-Ende korrigieren */
-if(
-end.getHours()===0 &&
-end.getMinutes()===0 &&
-end.getSeconds()===0
-){
-effectiveEnd.setMilliseconds(effectiveEnd.getMilliseconds()-1);
+if(end.getHours()===0 && end.getMinutes()===0 && end.getSeconds()===0){
+ee.setMilliseconds(ee.getMilliseconds()-1);
 }
 
-return start < nextDay && effectiveEnd >= dayStart;
-}
-
-function driverOwnsEvent(driver,ev){
-const name=clean(driver.name);
-const txt=clean((ev.subCalendars||[]).join(" "));
-return txt.includes(name);
+return start<nx && ee>=ds;
 }
 
 async function loadGoogle(key){
-return new Promise(resolve=>{
-if(window.google){resolve();return;}
+return new Promise(res=>{
+if(window.google){res();return;}
 const s=document.createElement("script");
 s.src=`https://maps.googleapis.com/maps/api/js?key=${key}`;
-s.onload=resolve;
+s.onload=res;
 document.head.appendChild(s);
 });
 }
 
 function getDistances(dest){
-return new Promise(resolve=>{
+return new Promise(res=>{
 new google.maps.DistanceMatrixService().getDistanceMatrix({
 origins:drivers.map(d=>d.plz),
 destinations:[dest],
 travelMode:"DRIVING"
-},r=>resolve(r));
+},r=>res(r));
 });
 }
 
@@ -328,32 +366,33 @@ const kKey=localStorage.getItem("kKey");
 const kIds=localStorage.getItem("kIds");
 const gKey=localStorage.getItem("gKey");
 
-if(!kKey || !kIds || !gKey){
+if(!kKey||!kIds||!gKey){
 alert("Bitte Setup ausfüllen.");
 return;
 }
 
-const from=document.getElementById("dateFrom").value;
-const to=document.getElementById("dateTo").value;
-const start=document.getElementById("startPlz").value;
+const from=dateFrom.value;
+const to=dateTo.value;
+const start=startPlz.value;
 
-log("📅 Lade Kalenderdaten...");
+log("Lade Daten...");
 loadedEvents=await loadEvents(from,to,kIds,kKey);
 
-log("🗺️ Berechne Wege...");
 await loadGoogle(gKey);
 const matrix=await getDistances(start);
 
-const days=getDateRange(from,to);
+const days=getDays(from,to);
 
 let ranking=drivers.map((d,i)=>{
 
 const states=days.map(day=>{
-const busy=loadedEvents.some(ev =>
-driverOwnsEvent(d,ev) &&
-eventBlocksDay(ev,day)
-);
-return {day,busy};
+const ev=loadedEvents.find(x=>owns(d,x)&&blocks(x,day));
+return {
+day,
+busy:!!ev,
+eventId:ev?ev.id:null,
+title:ev?ev.title:""
+};
 });
 
 const freeCount=states.filter(x=>!x.busy).length;
@@ -375,19 +414,21 @@ return a.distVal-b.distVal;
 });
 
 render(ranking);
+log("Analyse abgeschlossen.");
 
-log("✅ Analyse abgeschlossen.");
 }catch(e){
-log("❌ "+e.message);
+log("Fehler: "+e.message);
 }
 }
 
 function render(list){
-document.getElementById("results").innerHTML=list.map(d=>{
+results.innerHTML=list.map(d=>{
 
 let cls="busy";
 if(d.freeCount===d.states.length) cls="free";
 else if(d.freeCount>0) cls="partial";
+
+const firstBusy=d.states.find(x=>x.busy);
 
 return `
 <div class="driver ${cls}">
@@ -397,13 +438,21 @@ return `
 
 <div class="daybar">
 ${d.states.map(s=>`
-<div class="day ${s.busy?'busyDay':'freeDay'}">
-${s.day.slice(8)}
-</div>
+<div class="day ${s.busy?'busyDay':'freeDay'}">${s.day.slice(8)}</div>
 `).join("")}
 </div>
 
-${d.freeCount>0?`<button class="book-btn">BUCHEN</button>`:""}
+<div>
+
+${d.freeCount>0?`
+<button class="book-btn" onclick="openModal('${d.name.replace(/'/g,"")}')">BUCHEN</button>
+`:""}
+
+${firstBusy?`
+<button class="del-btn" onclick="deleteEvent('${firstBusy.eventId}')">LÖSCHEN</button>
+`:""}
+
+</div>
 
 </div>
 
@@ -415,6 +464,74 @@ ${d.distText}<br>
 `;
 }).join("");
 }
+
+function openModal(name){
+currentDriver=name;
+popDriver.value=name;
+popText.value="";
+modal.style.display="flex";
+}
+
+function closeModal(){
+modal.style.display="none";
+}
+
+async function confirmBooking(){
+
+const payload={
+startDate:dateFrom.value+" 00:00:00",
+endDate:dateTo.value+" 23:59:59",
+title:schoolSelect.options[schoolSelect.selectedIndex].text,
+description:popText.value,
+wholeDay:true,
+subCalendars:[currentDriver],
+timeZone:"Europe/Berlin"
+};
+
+closeModal();
+
+const r=await fetch(
+"https://corsproxy.io/?"+encodeURIComponent("https://api.kalender.digital/public/event"),
+{
+method:"POST",
+headers:{
+"Content-Type":"application/json",
+"X-API-KEY":localStorage.getItem("kKey")
+},
+body:JSON.stringify(payload)
+});
+
+if(r.ok){
+alert("Gebucht.");
+run();
+}else{
+alert("Fehler beim Buchen.");
+}
+}
+
+async function deleteEvent(id){
+
+if(!confirm("Termin löschen?")) return;
+
+const r=await fetch(
+"https://corsproxy.io/?"+encodeURIComponent("https://api.kalender.digital/public/event/"+id),
+{
+method:"DELETE",
+headers:{
+"X-API-KEY":localStorage.getItem("kKey")
+}
+});
+
+if(r.ok){
+alert("Gelöscht.");
+run();
+}else{
+alert("Löschen fehlgeschlagen.");
+}
+}
+
+dateFrom.value=new Date().toISOString().slice(0,10);
+dateTo.value=new Date().toISOString().slice(0,10);
 </script>
 </body>
 </html>
