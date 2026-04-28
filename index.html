@@ -55,7 +55,7 @@ button{border:none;border-radius:12px;cursor:pointer;font-weight:700;transition:
     <div id="log" class="log">Bereit.</div>
 </div>
 
-<div id="results" style="margin-top:20px;"></div>
+<div id="results" style="margin-top:20px;max-width:920px;margin-left:auto;margin-right:auto;"></div>
 
 <div id="bookingModal" class="modal-overlay">
     <div class="modal-box">
@@ -82,55 +82,130 @@ const drivers = [
     {name:"Moser Siegfried",plz:"30827"},{name:"Bodewell Thomas",plz:"30853"}
 ];
 
-window.onload=()=>{
-    const ts=document.getElementById('tourSelect');
-    for(let i=1;i<=40;i++){let o=document.createElement('option');o.value="Tour "+i;o.innerText="Tour "+i;ts.appendChild(o);}
+// ── Timezone-Hilfsfunktionen ────────────────────────────────────────────────
+
+const TZ = "Europe/Berlin";
+const dateFmt = new Intl.DateTimeFormat("en-CA", {
+    timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit"
+});
+
+/**
+ * Parst einen API-Datums-String von kalender.digital.
+ * Format kann sein: "2026-04-27 08:00:00" (ohne TZ-Angabe = wird als Europe/Berlin behandelt)
+ * oder ISO: "2026-04-27T08:00:00Z" / "2026-04-27T08:00:00+02:00"
+ */
+function parseApiDate(str) {
+    if (!str) return null;
+    // Hat der String bereits einen TZ-Indikator (Z oder +/- Offset)?
+    const hasOffset = /Z$|[+-]\d{2}:\d{2}$/.test(str.trim());
+    if (hasOffset) {
+        return new Date(str.replace(" ", "T"));
+    }
+    // Kein Offset → API meint Europe/Berlin, wir müssen manuell umrechnen.
+    // Trick: Wir nutzen Intl um den lokalen Offset zu dieser Zeit zu bestimmen.
+    const isoLike = str.replace(" ", "T");
+    // Erzeuge UTC-Kandidat und berechne den tatsächlichen Offset iterativ (DST-sicher)
+    const naive = new Date(isoLike + "Z"); // erstmal als UTC lesen
+    const localStr = dateFmt.format(naive) + "T" + isoLike.split("T")[1];
+    const offset = naive.getTime() - new Date(localStr + "Z").getTime();
+    return new Date(naive.getTime() + offset);
+}
+
+/**
+ * Gibt das lokale Datum (YYYY-MM-DD) eines Date-Objekts in Europe/Berlin zurück.
+ */
+function toLocalDateStr(date) {
+    return dateFmt.format(date); // "en-CA" liefert YYYY-MM-DD
+}
+
+/**
+ * Baut den days-Array ohne toISOString()-Bug.
+ * Verwendet getFullYear/getMonth/getDate auf einem lokalen Date-Objekt.
+ */
+function buildDays(from, to) {
+    const pad = n => String(n).padStart(2, "0");
+    const days = [];
+    // Datum-Strings "YYYY-MM-DD" direkt splitten, kein Date-Konstruktor nötig
+    const [fy, fm, fd] = from.split("-").map(Number);
+    const [ty, tm, td] = to.split("-").map(Number);
+    let cur = new Date(fy, fm - 1, fd);          // lokale Mitternacht, kein UTC-Shift
+    const end = new Date(ty, tm - 1, td);
+    while (cur <= end) {
+        days.push(`${cur.getFullYear()}-${pad(cur.getMonth()+1)}-${pad(cur.getDate())}`);
+        cur.setDate(cur.getDate() + 1);
+    }
+    return days;
+}
+
+/**
+ * Prüft ob ein Event den angegebenen Tag (YYYY-MM-DD) in Europe/Berlin berührt.
+ * Vergleicht lokale Tagesdaten, nicht UTC-Rohdaten.
+ */
+function eventCoversDay(event, dayStr) {
+    const eStart = parseApiDate(event.startDate);
+    const eEnd   = parseApiDate(event.endDate);
+    if (!eStart || !eEnd) return false;
+
+    // Lokale Tagesdaten des Events
+    const localStart = toLocalDateStr(eStart); // "2026-04-27"
+    const localEnd   = toLocalDateStr(eEnd);
+
+    // Tages-Intervall-Vergleich als Strings (lexikografisch korrekt für YYYY-MM-DD)
+    return localStart <= dayStr && localEnd >= dayStr;
+}
+
+// ── Hauptlogik ──────────────────────────────────────────────────────────────
+
+window.onload = () => {
+    const ts = document.getElementById('tourSelect');
+    for (let i = 1; i <= 40; i++) {
+        const o = document.createElement('option');
+        o.value = "Tour " + i;
+        o.innerText = "Tour " + i;
+        ts.appendChild(o);
+    }
 };
 
-async function run(){
-    const kKey=localStorage.getItem("kKey"), kIds=localStorage.getItem("kIds");
-    if(!kKey || !kIds) return alert("Setup fehlt!");
-    
+async function run() {
+    const kKey = localStorage.getItem("kKey");
+    const kIds = localStorage.getItem("kIds");
+    if (!kKey || !kIds) return alert("Setup fehlt!");
+
     const logger = document.getElementById("log");
     const from = document.getElementById("dateFrom").value;
-    const to = document.getElementById("dateTo").value;
-    
-    logger.innerHTML = `📅 Starte Abfrage von ${from} bis ${to}...\n`;
-    
+    const to   = document.getElementById("dateTo").value;
+
+    logger.innerHTML = `📅 Starte Abfrage von ${from} bis ${to} (TZ: ${TZ})...\n`;
+
     let allEvents = [];
     try {
-        for(const id of kIds.split(",")){
-            const url = `https://api.kalender.digital/public/event?startDate=${from}&endDate=${to}&timeZone=Europe/Berlin`;
+        for (const id of kIds.split(",")) {
+            const url = `https://api.kalender.digital/public/event?startDate=${from}&endDate=${to}&timeZone=${TZ}`;
             const proxy = "https://corsproxy.io/?" + encodeURIComponent(url);
-            const r = await fetch(proxy, {headers:{"X-API-KEY":kKey}});
+            const r = await fetch(proxy, { headers: { "X-API-KEY": kKey } });
             const data = await r.json();
             const found = data.events || data || [];
             allEvents.push(...found);
-            logger.innerHTML += `📥 Kalender ${id.trim().substring(0,5)}... geladen (${found.length} Termine)\n`;
+            logger.innerHTML += `📥 Kalender ${id.trim().substring(0, 5)}... geladen (${found.length} Termine)\n`;
         }
-    } catch(e) { logger.innerHTML += `❌ Fehler: ${e.message}\n`; }
+    } catch(e) {
+        logger.innerHTML += `❌ Fehler: ${e.message}\n`;
+    }
 
-    let days = [];
-    let cur = new Date(from);
-    let endD = new Date(to);
-    while(cur <= endD){ days.push(cur.toISOString().split('T')[0]); cur.setDate(cur.getDate()+1); }
+    // BUG 3 GEFIXT: days ohne toISOString()-UTC-Verschiebung
+    const days = buildDays(from, to);
+    logger.innerHTML += `📆 Prüftage: ${days.join(", ")}\n`;
 
-    let ranking = drivers.map(d => {
+    const ranking = drivers.map(d => {
         const nameClean = d.name.toLowerCase().trim();
-        const lastName = d.name.split(" ")[0].toLowerCase();
+        const lastName  = d.name.split(" ")[0].toLowerCase();
 
         const states = days.map(day => {
-            const dStart = new Date(day + "T00:00:00").getTime();
-            const dEnd = new Date(day + "T23:59:59").getTime();
-
             const match = allEvents.find(e => {
-                // 1. Zeit-Check
-                const eStart = new Date(e.startDate.replace(" ","T")).getTime();
-                const eEnd = new Date(e.endDate.replace(" ","T")).getTime();
-                const inTime = (eStart <= dEnd && eEnd >= dStart);
-                if(!inTime) return false;
+                // BUG 1 + 2 GEFIXT: Timezone-korrekte Datumsprüfung
+                const inTime = eventCoversDay(e, day);
+                if (!inTime) return false;
 
-                // 2. Namens-Check (wir suchen ALLES durch)
                 const searchString = JSON.stringify(e).toLowerCase();
                 return searchString.includes(nameClean) || searchString.includes(lastName);
             });
@@ -140,18 +215,18 @@ async function run(){
         return { ...d, states, freeCount: states.filter(s => !s.busy).length };
     });
 
-    ranking.sort((a,b) => b.freeCount - a.freeCount);
+    ranking.sort((a, b) => b.freeCount - a.freeCount);
     render(ranking);
-    logger.innerHTML += "✅ Analyse abgeschlossen.";
+    logger.innerHTML += `✅ Analyse abgeschlossen. ${ranking.filter(d=>d.freeCount===d.states.length).length} Fahrer voll verfügbar.`;
 }
 
-function render(list){
+function render(list) {
     document.getElementById("results").innerHTML = list.map(d => `
-        <div class="driver ${d.freeCount==d.states.length?'all-free':(d.freeCount==0?'full-busy':'part-free')}">
+        <div class="driver ${d.freeCount == d.states.length ? 'all-free' : (d.freeCount == 0 ? 'full-busy' : 'part-free')}">
             <div>
                 <strong>${d.name}</strong>
                 <div class="day-strip">
-                    ${d.states.map(s => `<div class="day-box ${s.busy?'day-busy':'day-free'}" title="${s.title}">${s.day.split("-")[2]}</div>`).join("")}
+                    ${d.states.map(s => `<div class="day-box ${s.busy ? 'day-busy' : 'day-free'}" title="${s.day}: ${s.title}">${s.day.split("-")[2]}</div>`).join("")}
                 </div>
                 <button onclick="openModal('${d.name}')" style="background:var(--green);color:#fff;padding:5px 10px;margin-top:8px;border-radius:8px;font-size:0.8rem;">BUCHEN</button>
             </div>
@@ -159,15 +234,15 @@ function render(list){
         </div>`).join("");
 }
 
-function setup(){
+function setup() {
     localStorage.setItem("kKey", prompt("API Key:"));
-    localStorage.setItem("kIds", prompt("Kalender IDs:"));
+    localStorage.setItem("kIds", prompt("Kalender IDs (kommagetrennt):"));
     localStorage.setItem("gKey", prompt("Google Key (optional):"));
     location.reload();
 }
-function openModal(n){ document.getElementById('popDriver').value=n; document.getElementById('bookingModal').style.display='flex'; }
-function closeModal(){ document.getElementById('bookingModal').style.display='none'; }
-function confirmBooking(){ alert("Funktion in v53 aktiv. API wird aufgerufen..."); closeModal(); }
+function openModal(n) { document.getElementById('popDriver').value = n; document.getElementById('bookingModal').style.display = 'flex'; }
+function closeModal() { document.getElementById('bookingModal').style.display = 'none'; }
+function confirmBooking() { alert("Funktion in v53 aktiv. API wird aufgerufen..."); closeModal(); }
 </script>
 </body>
 </html>
