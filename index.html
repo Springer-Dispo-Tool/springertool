@@ -19,6 +19,7 @@ input,select,textarea{width:100%;padding:12px;border:1px solid #e5e7eb;border-ra
 button{border:none;border-radius:12px;cursor:pointer;font-weight:700}
 .main-btn{width:100%;padding:15px;margin-top:14px;background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff}
 .setup-btn{width:100%;padding:12px;margin-top:10px;background:#f3f4f6}
+.admin-btn{width:100%;padding:12px;margin-top:10px;background:#e0ecff;color:#1d4ed8}
 .book-btn{padding:10px 14px;background:var(--green);color:#fff;margin:6px 6px 0 0}
 .edit-btn{padding:10px 14px;background:var(--orange);color:#fff;margin:6px 6px 0 0}
 .del-btn{padding:10px 14px;background:#fff;color:var(--red);border:1px solid #fecaca;margin:6px 6px 0 0}
@@ -39,9 +40,12 @@ button{border:none;border-radius:12px;cursor:pointer;font-weight:700}
 .day-choice{display:flex;align-items:center;gap:8px;background:#f8fafc;border:1px solid #e5e7eb;border-radius:10px;padding:10px;font-weight:700}
 .day-choice input{width:auto}
 .delete-choice{background:#fff7f7;border-color:#fecaca}
+.admin-list{margin-top:15px;border-top:1px solid #e5e7eb;padding-top:12px}
+.admin-item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px;border:1px solid #e5e7eb;border-radius:12px;margin-bottom:8px;background:#f8fafc}
+.admin-actions button{padding:7px 10px;margin-left:5px}
 @media(max-width:760px){
 body{padding:12px}.header{flex-direction:column;text-align:center;gap:8px}.header img{height:58px}.header-title{font-size:1.7rem}
-.row{grid-template-columns:1fr}.driver{flex-direction:column;align-items:flex-start}.right{text-align:left}
+.row{grid-template-columns:1fr}.driver{flex-direction:column;align-items:flex-start}.right{text-align:left}.admin-item{flex-direction:column;align-items:flex-start}
 }
 </style>
 </head>
@@ -97,6 +101,7 @@ body{padding:12px}.header{flex-direction:column;text-align:center;gap:8px}.heade
 
 <button class="main-btn" onclick="run()">Verfügbarkeit & Ranking prüfen</button>
 <button class="setup-btn" onclick="setup()">⚙️ API Setup</button>
+<button class="admin-btn" onclick="openAdminModal()">👤 Melder verwalten</button>
 
 <div id="log" class="log">Bereit.</div>
 </div>
@@ -116,19 +121,8 @@ body{padding:12px}.header{flex-direction:column;text-align:center;gap:8px}.heade
 <div class="row">
 <div>
 <label>Wer meldet sich?</label>
-<select id="nameSelect" onchange="updatePopText()">
-<option value="">-- Wählen --</option>
-<option value="Angela">Angela</option><option value="Anja">Anja</option><option value="Beate">Beate</option>
-<option value="Bettina">Bettina</option><option value="Birgit">Birgit</option><option value="Christiane">Christiane</option>
-<option value="Daniela">Daniela</option><option value="Frank">Frank</option><option value="Gerhard">Gerhard</option>
-<option value="Heike">Heike</option><option value="Jürgen">Jürgen</option><option value="Karin">Karin</option>
-<option value="Katja">Katja</option><option value="Kerstin">Kerstin</option><option value="Klaus">Klaus</option>
-<option value="Manuela">Manuela</option><option value="Marion">Marion</option><option value="Michael">Michael</option>
-<option value="Moni">Moni</option><option value="Nicole">Nicole</option><option value="Nina">Nina</option>
-<option value="Petra">Petra</option><option value="Ralf">Ralf</option><option value="Reinhard">Reinhard</option>
-<option value="Sabine">Sabine</option><option value="Silke">Silke</option><option value="Steffi">Steffi</option>
-<option value="Susanne">Susanne</option><option value="Ute">Ute</option><option value="Yildiz">Yildiz</option>
-</select>
+<select id="nameSelect" onchange="updatePopText(); showMelderPhoneHint();"></select>
+<div id="melderPhoneHint" class="small" style="margin-top:5px;"></div>
 </div>
 <div>
 <label>Tour</label>
@@ -182,6 +176,34 @@ Hinweis: Wenn ein Termin mehrere Tage umfasst, wird beim Löschen der komplette 
 </div>
 </div>
 
+<div class="modal" id="adminModal">
+<div class="modal-box">
+<h3>Melder verwalten</h3>
+
+<div class="row">
+<div>
+<label>Name</label>
+<input id="adminName" placeholder="z.B. Karin">
+</div>
+<div>
+<label>Telefonnummer</label>
+<input id="adminPhone" placeholder="z.B. 0157 12345678">
+</div>
+</div>
+
+<div style="display:flex;gap:10px;margin-top:14px">
+<button onclick="saveMelder()" style="flex:2;background:#2563eb;color:#fff;padding:12px">Speichern / Aktualisieren</button>
+<button onclick="closeAdminModal()" style="flex:1;background:#eee;padding:12px">Schließen</button>
+</div>
+
+<div class="small" style="margin-top:10px;">
+Nummern werden automatisch ins WhatsApp-Format umgewandelt. Änderungen gelten auf diesem Gerät/Browser.
+</div>
+
+<div id="adminList" class="admin-list"></div>
+</div>
+</div>
+
 <script>
 const drivers=[
 {name:"Aschenbach André",plz:"30989"},{name:"Ohm Lars",plz:"30559"},{name:"Bachmeier Reinhard",plz:"30659"},
@@ -193,17 +215,120 @@ const drivers=[
 {name:"Beka Jonel",plz:"31275"},{name:"Bodewell Thomas",plz:"30853"}
 ];
 
-const melderPhones={
+const defaultMelders={
 "Heike":"4915782029022","Beate":"491705443698","Moni":"491721745944","Nina":"491739530040",
 "Klaus":"4915739132507","Frank":"4915231878343","Angela":"491702905775","Gerhard":"491629210557",
 "Anja":"4915253221205","Jürgen":"4916222476215","Michael":"491718505569","Bettina":"49151422821554",
 "Steffi":"4915757574231484","Karin":"49157300600878","Nicole":"49151519588867","Ralf":"491756690269",
-"Katja":"4916281816066","Petra":"4915157368832","Reinhard":"4915205421316"
+"Katja":"4916281816066","Petra":"4915157368832","Reinhard":"4915205421316",
+"Birgit":"","Karin":"","Manuela":"","Marion":"","Sabine":"","Susanne":"","Yildiz":""
 };
 
+let melderPhones={};
 let loadedEvents=[];
 let mode="new";
 let editId=null;
+
+function loadMelders(){
+const saved=localStorage.getItem("melderPhones");
+if(saved){
+try{melderPhones=JSON.parse(saved);}
+catch(e){melderPhones={...defaultMelders};}
+}else{
+melderPhones={...defaultMelders};
+}
+dedupeMelders();
+}
+
+function saveMelders(){
+localStorage.setItem("melderPhones",JSON.stringify(melderPhones));
+}
+
+function dedupeMelders(){
+const cleaned={};
+Object.keys(melderPhones).forEach(name=>{
+const n=name.trim();
+if(!n) return;
+cleaned[n]=melderPhones[name]||"";
+});
+melderPhones=cleaned;
+saveMelders();
+}
+
+function normalizePhone(phone){
+let p=(phone||"").replace(/\D/g,"");
+if(!p) return "";
+if(p.startsWith("00")) p=p.substring(2);
+if(p.startsWith("0")) p="49"+p.substring(1);
+if(!p.startsWith("49")) p="49"+p;
+return p;
+}
+
+function buildMelderDropdown(selected=""){
+const names=Object.keys(melderPhones).sort((a,b)=>a.localeCompare(b,"de"));
+nameSelect.innerHTML=`<option value="">-- Wählen --</option>`+
+names.map(n=>`<option value="${n}" ${n===selected?"selected":""}>${n}</option>`).join("");
+showMelderPhoneHint();
+}
+
+function showMelderPhoneHint(){
+const n=nameSelect.value;
+if(!n){melderPhoneHint.textContent="";return;}
+melderPhoneHint.textContent=melderPhones[n] ? "WhatsApp-Nummer hinterlegt." : "Keine WhatsApp-Nummer hinterlegt.";
+melderPhoneHint.style.color=melderPhones[n] ? "#16a34a" : "#dc2626";
+}
+
+function openAdminModal(){
+adminName.value="";
+adminPhone.value="";
+renderAdminList();
+adminModal.style.display="flex";
+}
+
+function closeAdminModal(){
+adminModal.style.display="none";
+buildMelderDropdown(nameSelect.value);
+}
+
+function saveMelder(){
+const name=adminName.value.trim();
+const phone=normalizePhone(adminPhone.value);
+if(!name){alert("Bitte Namen eingeben.");return;}
+melderPhones[name]=phone;
+saveMelders();
+renderAdminList();
+buildMelderDropdown(name);
+alert("Melder gespeichert.");
+}
+
+function editMelder(name){
+adminName.value=name;
+adminPhone.value=melderPhones[name]||"";
+}
+
+function deleteMelder(name){
+if(!confirm(name+" wirklich löschen?")) return;
+delete melderPhones[name];
+saveMelders();
+renderAdminList();
+buildMelderDropdown();
+}
+
+function renderAdminList(){
+const names=Object.keys(melderPhones).sort((a,b)=>a.localeCompare(b,"de"));
+adminList.innerHTML=names.map(n=>`
+<div class="admin-item">
+<div>
+<strong>${n}</strong><br>
+<span class="small">${melderPhones[n] ? melderPhones[n] : "Keine Nummer hinterlegt"}</span>
+</div>
+<div class="admin-actions">
+<button onclick="editMelder('${n.replace(/'/g,"\\'")}')" style="background:#facc15;">Bearbeiten</button>
+<button onclick="deleteMelder('${n.replace(/'/g,"\\'")}')" style="background:#fff;color:var(--red);border:1px solid #fecaca;">Löschen</button>
+</div>
+</div>
+`).join("");
+}
 
 function log(t){document.getElementById("log").textContent=t}
 
@@ -269,6 +394,7 @@ window.open(url,"_blank");
 }
 
 window.onload=()=>{
+loadMelders();
 for(let i=1;i<=40;i++){
 let o=document.createElement('option');
 o.value="Tour "+i;
@@ -278,6 +404,7 @@ tourSelect.appendChild(o);
 dateFrom.value=new Date().toISOString().slice(0,10);
 dateTo.value=new Date().toISOString().slice(0,10);
 fillDrivers();
+buildMelderDropdown();
 };
 
 function getDays(a,b){
@@ -389,6 +516,7 @@ modalTitle.textContent="Neuen Termin buchen";
 freeDaysLabel.style.display="block";
 freeDaysBox.style.display="grid";
 fillDrivers(name);
+buildMelderDropdown();
 nameSelect.value="";
 tourSelect.value="";
 popText.value="";
@@ -412,6 +540,7 @@ modalTitle.textContent="Termin ändern";
 freeDaysLabel.style.display="none";
 freeDaysBox.style.display="none";
 fillDrivers((ev.subCalendars||[""])[0]);
+buildMelderDropdown();
 popText.value=ev.description||"";
 const st=(ev.startDate||"").split(" ")[1]||"00:00:00";
 const et=(ev.endDate||"").split(" ")[1]||"23:59:59";
