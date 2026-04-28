@@ -2,247 +2,74 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Springer-Dispo Pro v53.0</title>
+<title>Springer-Dispo v54.0 - DEBUG MODE</title>
 <style>
-:root{ --blue:#2563eb; --green:#16a34a; --red:#dc2626; --orange:#f59e0b; --bg:#eef2f7; --text:#111827; }
-body{margin:0;padding:20px;font-family:Segoe UI,sans-serif;background:var(--bg);color:var(--text);}
-.card{max-width:920px;margin:auto;background:#fff;padding:26px;border-radius:24px;box-shadow:0 20px 60px rgba(0,0,0,.10);}
-h2{margin:0 0 18px;text-align:center;color:var(--blue);}
-label{display:block;margin:12px 0 6px;font-weight:700;}
-input,select,textarea{width:100%;padding:12px;border:1px solid #ccc;border-radius:12px;margin-bottom:10px;}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-button{border:none;border-radius:12px;cursor:pointer;font-weight:700;transition:.2s;}
-.main-btn{width:100%;padding:15px;background:var(--blue);color:#fff;font-size:1rem;}
-.log{margin-top:14px;padding:14px;background:#0f172a;color:#4ade80;font-family:monospace;border-radius:14px;font-size:.85rem;min-height:80px;white-space:pre-wrap;overflow-y:auto;max-height:200px;}
-.driver{background:#fff;padding:16px;border-radius:18px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 8px 20px rgba(0,0,0,0.06);border-left:8px solid #ccc;}
-.all-free{border-left-color:var(--green);}
-.part-free{border-left-color:var(--orange);}
-.full-busy{border-left-color:var(--red);}
-.day-strip{display:flex;gap:5px;margin-top:8px;}
-.day-box{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:bold;color:#fff;}
-.day-free{background:var(--green);}
-.day-busy{background:var(--red);}
-.modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:2000;justify-content:center;align-items:center;backdrop-filter:blur(4px);}
-.modal-box{background:#fff;padding:25px;border-radius:20px;width:95%;max-width:450px;}
+    :root{ --blue:#2563eb; --green:#16a34a; --red:#dc2626; --bg:#eef2f7; }
+    body{padding:20px;font-family:sans-serif;background:var(--bg);}
+    .card{max-width:900px;margin:auto;background:#fff;padding:25px;border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,0.1);}
+    .log{margin-top:15px;padding:12px;background:#0f172a;color:#4ade80;border-radius:10px;font-family:monospace;font-size:0.8rem;white-space:pre-wrap;}
+    button{width:100%;padding:15px;background:var(--blue);color:#fff;font-weight:bold;border:none;border-radius:12px;cursor:pointer;}
 </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>Springer-Dispo Pro v53.0</h2>
-    
-    <label>Einrichtung</label>
-    <select id="schoolSelect" onchange="if(this.value)document.getElementById('startPlz').value=this.value">
-        <option value="">-- wählen --</option>
-        <option value="30655">Albert-Liebmann-Schule (30655)</option>
-        <option value="30827">Ilmasi Schule (30827)</option>
-        <option value="30853">Gutzmann Schule (30853)</option>
-        <option value="31535">Michael-Ende-Schule (31535)</option>
-        <option value="30165">Stötzner-Schule (30165)</option>
-    </select>
-
-    <label>PLZ Start</label>
-    <input id="startPlz" value="30159">
-
-    <div class="row">
-        <div><label>Von</label><input type="date" id="dateFrom" value="2026-04-27"></div>
-        <div><label>Bis</label><input type="date" id="dateTo" value="2026-04-30"></div>
+    <h2>Springer-Dispo v54.0 (Diagnose-Modus)</h2>
+    <p>Bitte Konsole mit <b>F12</b> öffnen, bevor du die Abfrage startest!</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+        <input type="date" id="dateFrom" value="2026-04-27">
+        <input type="date" id="dateTo" value="2026-04-30">
     </div>
-
-    <button class="main-btn" onclick="run()">Abfrage starten</button>
-    <button onclick="setup()" style="width:100%;background:#f3f4f6;padding:10px;margin-top:10px;border-radius:12px;">⚙️ API Setup</button>
-    <div id="log" class="log">Bereit.</div>
-</div>
-
-<div id="results" style="margin-top:20px;max-width:920px;margin-left:auto;margin-right:auto;"></div>
-
-<div id="bookingModal" class="modal-overlay">
-    <div class="modal-box">
-        <h3>Tour buchen</h3>
-        <input type="text" id="popDriver" readonly style="background:#f3f4f6">
-        <div class="row">
-            <select id="nameSelect"><option value="Angela">Angela</option><option value="Christoph">Christoph</option></select>
-            <select id="tourSelect"></select>
-        </div>
-        <textarea id="popDesc" rows="2" placeholder="Zusatz-Info"></textarea>
-        <button onclick="confirmBooking()" style="background:var(--blue);color:#fff;width:100%;padding:12px;margin-top:10px;">Eintragen</button>
-        <button onclick="closeModal()" style="background:#eee;width:100%;padding:10px;margin-top:5px;">Abbruch</button>
-    </div>
+    <button onclick="run()">Abfrage starten & Daten loggen</button>
+    <div id="log" class="log">Warte auf Start...</div>
 </div>
 
 <script>
-const drivers = [
-    {name:"Aschenbach André",plz:"30989"},{name:"Ohm Lars",plz:"30559"},{name:"Bachmeier Reinhard",plz:"30659"},
-    {name:"Isfahan Mozaffaey Hamid",plz:"30519"},{name:"Otto Alexander",plz:"30173"},{name:"Türkel Tuncer",plz:"30161"},
-    {name:"Schrader Harald",plz:"30880"},{name:"Neubauer Michael",plz:"30853"},{name:"Ferkau Eckart",plz:"30851"},
-    {name:"Bethmann Ekkehard",plz:"31535"},{name:"Hauer Frank",plz:"30900"},{name:"Kruse Jens Roland",plz:"31275"},
-    {name:"Grimpe Dirk",plz:"30827"},{name:"Häge Klaus Dieter",plz:"30519"},{name:"Von Treskow Albrecht",plz:"30659"},
-    {name:"Giuseppe Caruso",plz:"30880"},{name:"Popescu Viorel Florinel",plz:"30827"},{name:"Beka Jonel",plz:"31275"},
-    {name:"Moser Siegfried",plz:"30827"},{name:"Bodewell Thomas",plz:"30853"}
-];
-
-// ── Timezone-Hilfsfunktionen ────────────────────────────────────────────────
-
-const TZ = "Europe/Berlin";
-const dateFmt = new Intl.DateTimeFormat("en-CA", {
-    timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit"
-});
-
-/**
- * Parst einen API-Datums-String von kalender.digital.
- * Format kann sein: "2026-04-27 08:00:00" (ohne TZ-Angabe = wird als Europe/Berlin behandelt)
- * oder ISO: "2026-04-27T08:00:00Z" / "2026-04-27T08:00:00+02:00"
- */
-function parseApiDate(str) {
-    if (!str) return null;
-    // Hat der String bereits einen TZ-Indikator (Z oder +/- Offset)?
-    const hasOffset = /Z$|[+-]\d{2}:\d{2}$/.test(str.trim());
-    if (hasOffset) {
-        return new Date(str.replace(" ", "T"));
-    }
-    // Kein Offset → API meint Europe/Berlin, wir müssen manuell umrechnen.
-    // Trick: Wir nutzen Intl um den lokalen Offset zu dieser Zeit zu bestimmen.
-    const isoLike = str.replace(" ", "T");
-    // Erzeuge UTC-Kandidat und berechne den tatsächlichen Offset iterativ (DST-sicher)
-    const naive = new Date(isoLike + "Z"); // erstmal als UTC lesen
-    const localStr = dateFmt.format(naive) + "T" + isoLike.split("T")[1];
-    const offset = naive.getTime() - new Date(localStr + "Z").getTime();
-    return new Date(naive.getTime() + offset);
-}
-
-/**
- * Gibt das lokale Datum (YYYY-MM-DD) eines Date-Objekts in Europe/Berlin zurück.
- */
-function toLocalDateStr(date) {
-    return dateFmt.format(date); // "en-CA" liefert YYYY-MM-DD
-}
-
-/**
- * Baut den days-Array ohne toISOString()-Bug.
- * Verwendet getFullYear/getMonth/getDate auf einem lokalen Date-Objekt.
- */
-function buildDays(from, to) {
-    const pad = n => String(n).padStart(2, "0");
-    const days = [];
-    // Datum-Strings "YYYY-MM-DD" direkt splitten, kein Date-Konstruktor nötig
-    const [fy, fm, fd] = from.split("-").map(Number);
-    const [ty, tm, td] = to.split("-").map(Number);
-    let cur = new Date(fy, fm - 1, fd);          // lokale Mitternacht, kein UTC-Shift
-    const end = new Date(ty, tm - 1, td);
-    while (cur <= end) {
-        days.push(`${cur.getFullYear()}-${pad(cur.getMonth()+1)}-${pad(cur.getDate())}`);
-        cur.setDate(cur.getDate() + 1);
-    }
-    return days;
-}
-
-/**
- * Prüft ob ein Event den angegebenen Tag (YYYY-MM-DD) in Europe/Berlin berührt.
- * Vergleicht lokale Tagesdaten, nicht UTC-Rohdaten.
- */
-function eventCoversDay(event, dayStr) {
-    const eStart = parseApiDate(event.startDate);
-    const eEnd   = parseApiDate(event.endDate);
-    if (!eStart || !eEnd) return false;
-
-    // Lokale Tagesdaten des Events
-    const localStart = toLocalDateStr(eStart); // "2026-04-27"
-    const localEnd   = toLocalDateStr(eEnd);
-
-    // Tages-Intervall-Vergleich als Strings (lexikografisch korrekt für YYYY-MM-DD)
-    return localStart <= dayStr && localEnd >= dayStr;
-}
-
-// ── Hauptlogik ──────────────────────────────────────────────────────────────
-
-window.onload = () => {
-    const ts = document.getElementById('tourSelect');
-    for (let i = 1; i <= 40; i++) {
-        const o = document.createElement('option');
-        o.value = "Tour " + i;
-        o.innerText = "Tour " + i;
-        ts.appendChild(o);
-    }
-};
-
 async function run() {
     const kKey = localStorage.getItem("kKey");
     const kIds = localStorage.getItem("kIds");
-    if (!kKey || !kIds) return alert("Setup fehlt!");
+    if (!kKey || !kIds) return alert("Bitte zuerst API Setup machen!");
 
     const logger = document.getElementById("log");
     const from = document.getElementById("dateFrom").value;
-    const to   = document.getElementById("dateTo").value;
-
-    logger.innerHTML = `📅 Starte Abfrage von ${from} bis ${to} (TZ: ${TZ})...\n`;
+    const to = document.getElementById("dateTo").value;
+    
+    logger.innerHTML = "⏳ Lade Daten...\n";
 
     let allEvents = [];
     try {
         for (const id of kIds.split(",")) {
-            const url = `https://api.kalender.digital/public/event?startDate=${from}&endDate=${to}&timeZone=${TZ}`;
-            const proxy = "https://corsproxy.io/?" + encodeURIComponent(url);
-            const r = await fetch(proxy, { headers: { "X-API-KEY": kKey } });
-            const data = await r.json();
-            const found = data.events || data || [];
-            allEvents.push(...found);
-            logger.innerHTML += `📥 Kalender ${id.trim().substring(0, 5)}... geladen (${found.length} Termine)\n`;
-        }
-    } catch(e) {
-        logger.innerHTML += `❌ Fehler: ${e.message}\n`;
-    }
-
-    // BUG 3 GEFIXT: days ohne toISOString()-UTC-Verschiebung
-    const days = buildDays(from, to);
-    logger.innerHTML += `📆 Prüftage: ${days.join(", ")}\n`;
-
-    const ranking = drivers.map(d => {
-        const nameClean = d.name.toLowerCase().trim();
-        const lastName  = d.name.split(" ")[0].toLowerCase();
-
-        const states = days.map(day => {
-            const match = allEvents.find(e => {
-                // BUG 1 + 2 GEFIXT: Timezone-korrekte Datumsprüfung
-                const inTime = eventCoversDay(e, day);
-                if (!inTime) return false;
-
-                const searchString = JSON.stringify(e).toLowerCase();
-                return searchString.includes(nameClean) || searchString.includes(lastName);
+            const url = `https://api.kalender.digital/public/event?startDate=${from}&endDate=${to}&timeZone=Europe/Berlin`;
+            const r = await fetch("https://corsproxy.io/?" + encodeURIComponent(url), {
+                headers: { "X-API-KEY": kKey }
             });
-            return { day, busy: !!match, title: match ? match.title : "Frei" };
-        });
+            const data = await r.json();
+            const events = data.events || data || [];
+            allEvents.push(...events);
+        }
 
-        return { ...d, states, freeCount: states.filter(s => !s.busy).length };
-    });
+        // HIER IST DIE DIAGNOSE FÜR CLAUDE
+        if (allEvents.length > 0) {
+            console.log("--- CLAUDE-DATEN-CHECK START ---");
+            console.log("Hier ist das erste gefundene Event-Objekt:");
+            console.log(JSON.stringify(allEvents[0], null, 2));
+            console.log("--- CLAUDE-DATEN-CHECK ENDE ---");
+            logger.innerHTML += "✅ Daten in die Konsole (F12) kopiert!\n";
+        } else {
+            logger.innerHTML += "⚠️ Keine Termine im Zeitraum gefunden.\n";
+        }
 
-    ranking.sort((a, b) => b.freeCount - a.freeCount);
-    render(ranking);
-    logger.innerHTML += `✅ Analyse abgeschlossen. ${ranking.filter(d=>d.freeCount===d.states.length).length} Fahrer voll verfügbar.`;
-}
-
-function render(list) {
-    document.getElementById("results").innerHTML = list.map(d => `
-        <div class="driver ${d.freeCount == d.states.length ? 'all-free' : (d.freeCount == 0 ? 'full-busy' : 'part-free')}">
-            <div>
-                <strong>${d.name}</strong>
-                <div class="day-strip">
-                    ${d.states.map(s => `<div class="day-box ${s.busy ? 'day-busy' : 'day-free'}" title="${s.day}: ${s.title}">${s.day.split("-")[2]}</div>`).join("")}
-                </div>
-                <button onclick="openModal('${d.name}')" style="background:var(--green);color:#fff;padding:5px 10px;margin-top:8px;border-radius:8px;font-size:0.8rem;">BUCHEN</button>
-            </div>
-            <div style="font-weight:bold;">${d.freeCount}/${d.states.length} Frei</div>
-        </div>`).join("");
+    } catch (e) {
+        logger.innerHTML += "❌ Fehler: " + e.message;
+    }
 }
 
 function setup() {
     localStorage.setItem("kKey", prompt("API Key:"));
-    localStorage.setItem("kIds", prompt("Kalender IDs (kommagetrennt):"));
-    localStorage.setItem("gKey", prompt("Google Key (optional):"));
-    location.reload();
+    localStorage.setItem("kIds", prompt("Kalender IDs:"));
 }
-function openModal(n) { document.getElementById('popDriver').value = n; document.getElementById('bookingModal').style.display = 'flex'; }
-function closeModal() { document.getElementById('bookingModal').style.display = 'none'; }
-function confirmBooking() { alert("Funktion in v53 aktiv. API wird aufgerufen..."); closeModal(); }
+// Falls noch kein Setup da ist
+if(!localStorage.getItem("kKey")) setup();
 </script>
 </body>
 </html>
