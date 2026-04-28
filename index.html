@@ -32,9 +32,10 @@ button{border:none;border-radius:12px;cursor:pointer;font-weight:700}
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);justify-content:center;align-items:center;z-index:9999;padding:15px;backdrop-filter:blur(3px)}
 .modal-box{background:#fff;padding:24px;border-radius:22px;width:100%;max-width:560px;max-height:95vh;overflow:auto;box-shadow:0 20px 50px rgba(0,0,0,0.3)}
 .inline{display:flex;align-items:center;gap:10px;margin-top:10px}.inline input{width:auto}
-.day-select-box{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-top:8px}
+.day-select-box{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-top:8px}
 .day-choice{display:flex;align-items:center;gap:8px;background:#f8fafc;border:1px solid #e5e7eb;border-radius:10px;padding:10px;font-weight:700}
 .day-choice input{width:auto}
+.delete-choice{background:#fff7f7;border-color:#fecaca}
 @media(max-width:760px){.row{grid-template-columns:1fr}.driver{flex-direction:column;align-items:flex-start}.right{text-align:left}}
 </style>
 </head>
@@ -103,7 +104,7 @@ button{border:none;border-radius:12px;cursor:pointer;font-weight:700}
 <label>Fahrer</label>
 <select id="popDriver"></select>
 
-<label>Freie Tage auswählen</label>
+<label id="freeDaysLabel">Freie Tage auswählen</label>
 <div id="freeDaysBox" class="day-select-box"></div>
 
 <div class="row">
@@ -153,6 +154,27 @@ button{border:none;border-radius:12px;cursor:pointer;font-weight:700}
 </div>
 </div>
 
+<div class="modal" id="deleteModal">
+<div class="modal-box">
+<h3>Einzeltag(e) löschen</h3>
+
+<label>Fahrer</label>
+<input id="deleteDriver" readonly style="background:#f3f4f6">
+
+<label>Belegte Tage auswählen</label>
+<div id="deleteDaysBox" class="day-select-box"></div>
+
+<div class="small" style="margin-top:10px;">
+Hinweis: Wenn ein Termin mehrere Tage umfasst, wird beim Löschen der komplette zusammenhängende Termin gelöscht.
+</div>
+
+<div style="display:flex;gap:10px;margin-top:16px">
+<button onclick="closeDeleteModal()" style="flex:1;background:#eee;padding:12px">Abbruch</button>
+<button onclick="confirmDeleteSelected()" style="flex:2;background:var(--red);color:#fff;padding:12px">Ausgewählte löschen</button>
+</div>
+</div>
+</div>
+
 <script>
 const drivers=[
 {name:"Aschenbach André",plz:"30989"},{name:"Ohm Lars",plz:"30559"},{name:"Bachmeier Reinhard",plz:"30659"},
@@ -168,6 +190,7 @@ let loadedEvents=[];
 let mode="new";
 let editId=null;
 let currentStates=[];
+let deleteStates=[];
 
 function log(t){document.getElementById("log").textContent=t}
 
@@ -331,7 +354,7 @@ ${d.states.map(s=>`<div class="day ${s.busy?'busyDay':'freeDay'}">${s.day.slice(
 ${d.freeCount>0?`<button class="book-btn" onclick='openNew(${JSON.stringify(d.name)}, ${JSON.stringify(d.states)})'>BUCHEN</button>`:""}
 ${firstBusy?`
 <button class="edit-btn" onclick="openEdit('${firstBusy.event.id}')">ÄNDERN</button>
-<button class="del-btn" onclick="deleteEvent('${firstBusy.event.id}')">LÖSCHEN</button>
+<button class="del-btn" onclick='openDelete(${JSON.stringify(d.name)}, ${JSON.stringify(d.states)})'>LÖSCHEN</button>
 `:""}
 </div>
 </div>
@@ -348,6 +371,8 @@ mode="new";
 editId=null;
 currentStates=states;
 modalTitle.textContent="Neuen Termin buchen";
+freeDaysLabel.style.display="block";
+freeDaysBox.style.display="grid";
 fillDrivers(name);
 document.getElementById('nameSelect').value="";
 document.getElementById('tourSelect').value="";
@@ -370,9 +395,10 @@ if(!ev) return;
 mode="edit";
 editId=id;
 modalTitle.textContent="Termin ändern";
+freeDaysLabel.style.display="none";
+freeDaysBox.style.display="none";
 fillDrivers((ev.subCalendars||[""])[0]);
 popText.value=ev.description||"";
-freeDaysBox.innerHTML=`<div class="small">Beim Ändern wird der bestehende Termin bearbeitet.</div>`;
 const st=(ev.startDate||"").split(" ")[1]||"00:00:00";
 const et=(ev.endDate||"").split(" ")[1]||"23:59:59";
 if(ev.wholeDay){wholeDay.checked=true;}else{wholeDay.checked=false;timeFrom.value=st.slice(0,5);timeTo.value=et.slice(0,5);}
@@ -381,6 +407,51 @@ modal.style.display="flex";
 }
 
 function closeModal(){modal.style.display="none"}
+
+function openDelete(name,states){
+deleteStates=states.filter(s=>s.busy && s.event);
+deleteDriver.value=name;
+
+deleteDaysBox.innerHTML=deleteStates.map(s=>{
+const d=s.day.split("-");
+const title=s.event.title || "Termin";
+return `<label class="day-choice delete-choice">
+<input type="checkbox" class="deleteDayCheck" value="${s.event.id}" checked>
+${d[2]}.${d[1]}.${d[0]}<br><span class="small">${title}</span>
+</label>`;
+}).join("");
+
+deleteModal.style.display="flex";
+}
+
+function closeDeleteModal(){
+deleteModal.style.display="none";
+}
+
+async function confirmDeleteSelected(){
+const ids=[...document.querySelectorAll(".deleteDayCheck:checked")].map(x=>x.value);
+const uniqueIds=[...new Set(ids)];
+
+if(uniqueIds.length===0){
+alert("Bitte mindestens einen Termin auswählen.");
+return;
+}
+
+if(!confirm(uniqueIds.length+" Termin(e) wirklich löschen?")) return;
+
+let ok=0;
+for(const id of uniqueIds){
+const r=await fetch("https://corsproxy.io/?"+encodeURIComponent("https://api.kalender.digital/public/event/"+id),{
+method:"DELETE",
+headers:{"X-API-KEY":localStorage.getItem("kKey")}
+});
+if(r.ok) ok++;
+}
+
+closeDeleteModal();
+await run();
+alert(ok+" Termin(e) gelöscht.");
+}
 
 async function saveModal(){
 const kKey=localStorage.getItem("kKey");
