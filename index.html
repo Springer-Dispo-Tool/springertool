@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Springer-Dispo Pro v59.0</title>
+<title>Springer-Dispo Pro v61.0</title>
 <style>
 :root{ --blue:#2563eb; --green:#16a34a; --red:#dc2626; --orange:#f59e0b; --bg:#eef2f7; --text:#111827; }
 body{margin:0;padding:20px;font-family:Segoe UI,sans-serif;background:var(--bg);color:var(--text);}
 .card{max-width:920px;margin:auto;background:#fff;padding:26px;border-radius:24px;box-shadow:0 20px 60px rgba(0,0,0,.10);}
 h2{margin:0 0 18px;text-align:center;color:var(--blue);}
 label{display:block;margin:12px 0 6px;font-weight:700;}
-input,select,textarea{width:100%;padding:12px;border:1px solid #ccc;border-radius:12px;margin-bottom:10px;box-sizing:border-box;}
+input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:12px;margin-bottom:10px;box-sizing:border-box;}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 button{border:none;border-radius:12px;cursor:pointer;font-weight:700;transition:.2s;}
 .main-btn{width:100%;padding:15px;background:var(--blue);color:#fff;font-size:1rem;}
@@ -19,24 +19,29 @@ button{border:none;border-radius:12px;cursor:pointer;font-weight:700;transition:
 .all-free{border-left-color:var(--green);}
 .part-free{border-left-color:var(--orange);}
 .full-busy{border-left-color:var(--red);}
-.day-strip{display:flex;gap:5px;margin-top:8px;}
+.day-strip{display:flex;gap:5px;margin:2px 0 10px 0;}
 .day-box{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:bold;color:#fff;}
 .day-free{background:var(--green);}
 .day-busy{background:var(--red);}
+.book-btn{background:var(--green);color:#fff;padding:6px 12px;border-radius:8px;font-size:0.8rem;}
 </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>Springer-Dispo Pro v59.0</h2>
+    <h2>Springer-Dispo Pro v61.0</h2>
     
-    <label>Einrichtung</label>
-    <select id="schoolSelect" onchange="if(this.value)document.getElementById('startPlz').value=this.value">
-        <option value="">-- wählen --</option>
+    <label>Einrichtung PLZ (oder Name)</label>
+    <select id="schoolSelect" onchange="if(this.value) document.getElementById('startPlz').value = this.value;">
+        <option value="">-- Schule wählen --</option>
         <option value="30655">Albert-Liebmann-Schule (30655)</option>
         <option value="30827">Ilmasi Schule (30827)</option>
         <option value="30853">Gutzmann Schule (30853)</option>
+        <option value="31535">Michael-Ende-Schule (31535)</option>
     </select>
+
+    <label>PLZ Start</label>
+    <input id="startPlz" value="30159">
 
     <div class="row">
         <div><label>Von</label><input type="date" id="dateFrom" value="2026-04-27"></div>
@@ -44,7 +49,7 @@ button{border:none;border-radius:12px;cursor:pointer;font-weight:700;transition:
     </div>
 
     <button class="main-btn" onclick="run()">Abfrage starten</button>
-    <button onclick="setup()" style="width:100%;background:#f3f4f6;padding:10px;margin-top:10px;border-radius:12px;">⚙️ API Setup</button>
+    <button onclick="setup()" style="width:100%;background:#f3f4f6;padding:10px;margin-top:10px;border-radius:12px;">⚙️ Setup (API, IDs, Google)</button>
     <div id="log" class="log">Bereit.</div>
 </div>
 
@@ -61,79 +66,69 @@ const drivers = [
     {name:"Moser Siegfried",plz:"30827"},{name:"Bodewell Thomas",plz:"30853"}
 ];
 
-const TZ = "Europe/Berlin";
-
-function buildDays(from, to) {
-    const pad = n => String(n).padStart(2, "0");
-    const days = [];
-    const [fy, fm, fd] = from.split("-").map(Number);
-    const [ty, tm, td] = to.split("-").map(Number);
-    let cur = new Date(fy, fm - 1, fd);
-    const end = new Date(ty, tm - 1, td);
-    while (cur <= end) {
-        days.push(`${cur.getFullYear()}-${pad(cur.getMonth()+1)}-${pad(cur.getDate())}`);
-        cur.setDate(cur.getDate() + 1);
-    }
-    return days;
-}
-
-function eventCoversDay(event, dayStr) {
-    // API liefert "2026-03-23 00:00:00", wir brauchen nur "2026-03-23"
-    const eStart = event.startDate.split(" ")[0];
-    let eEnd = event.endDate.split(" ")[0];
-    
-    // Einfacher String-Vergleich für Tage ist bei diesem Format am sichersten
-    return dayStr >= eStart && dayStr <= eEnd;
-}
-
-function eventBelongsToDriver(event, driver) {
-    // Wir nehmen den Nachnamen (erstes Wort) für eine robuste Suche
-    const lastName = driver.name.split(" ")[0].toLowerCase().trim();
-    const fullName = driver.name.toLowerCase().trim();
-
-    // 1. Suche in subCalendars (Das sind laut API-Sample einfache Strings)
-    const subs = event.subCalendars || [];
-    const nameMatchInSubs = subs.some(sub => {
-        const s = String(sub).toLowerCase();
-        // Wir suchen nach dem Nachnamen im String, um Leerzeichen-Probleme zu umgehen
-        return s.includes(lastName);
-    });
-    if (nameMatchInSubs) return true;
-
-    // 2. Suche im Titel
-    const title = (event.title || "").toLowerCase();
-    if (title.includes(lastName)) return true;
-
-    return false;
+function setup() {
+    const api = prompt("Kalender API Key:");
+    const ids = prompt("Kalender IDs (kommagetrennt):");
+    const maps = prompt("Google Maps API Key:");
+    if(api) localStorage.setItem("kKey", api);
+    if(ids) localStorage.setItem("kIds", ids);
+    if(maps) localStorage.setItem("gKey", maps);
+    alert("Daten gespeichert! Seite wird neu geladen.");
+    location.reload();
 }
 
 async function run() {
-    const kKey = localStorage.getItem("kKey");
-    const kIds = localStorage.getItem("kIds");
+    const kKey = localStorage.getItem("kKey"), kIds = localStorage.getItem("kIds");
     if (!kKey || !kIds) return alert("Setup fehlt!");
 
     const logger = document.getElementById("log");
     const from = document.getElementById("dateFrom").value;
     const to = document.getElementById("dateTo").value;
-    logger.innerHTML = `📅 Starte Abfrage...\n`;
+    logger.innerHTML = "⏳ Lade Kalender-Daten...\n";
 
     let allEvents = [];
     try {
-        for (const id of kIds.split(",")) {
-            const url = `https://api.kalender.digital/public/event?startDate=${from}&endDate=${to}&timeZone=${TZ}`;
+        const idsArr = kIds.split(",");
+        for (const id of idsArr) {
+            const url = `https://api.kalender.digital/public/event?startDate=${from}&endDate=${to}&timeZone=Europe/Berlin`;
             const r = await fetch("https://corsproxy.io/?" + encodeURIComponent(url), {
                 headers: { "X-API-KEY": kKey }
             });
             const data = await r.json();
-            allEvents.push(...(data.events || data || []));
+            const events = data.events || data || [];
+            allEvents.push(...events);
         }
-    } catch(e) { logger.innerHTML += `❌ Fehler: ${e.message}\n`; }
+    } catch(e) { logger.innerHTML += "❌ API-Fehler: " + e.message + "\n"; }
 
-    const days = buildDays(from, to);
+    // Tage generieren
+    let days = [];
+    let cur = new Date(from);
+    let end = new Date(to);
+    while (cur <= end) {
+        days.push(cur.toISOString().split('T')[0]);
+        cur.setDate(cur.getDate() + 1);
+    }
+
     const ranking = drivers.map(d => {
+        const lastName = d.name.split(" ")[0].toLowerCase().trim();
+        const fullName = d.name.toLowerCase().trim();
+
         const states = days.map(day => {
-            const match = allEvents.find(e => eventCoversDay(e, day) && eventBelongsToDriver(e, d));
-            return { day, busy: !!match, title: match ? (match.title || "Besetzt") : "Frei" };
+            const match = allEvents.find(e => {
+                const eStart = e.startDate.split(" ")[0];
+                const eEnd = e.endDate.split(" ")[0];
+                if (!(day >= eStart && day <= eEnd)) return false;
+
+                const title = (e.title || "").toLowerCase();
+                const subs = (e.subCalendars || []).map(s => String(s).toLowerCase());
+                
+                // Namens-Check (ignoriert createdName!)
+                const tMatch = title.includes(lastName) || title.includes(fullName);
+                const sMatch = subs.some(s => s.includes(lastName) || s.includes(fullName));
+
+                return tMatch || sMatch;
+            });
+            return { day, busy: !!match, title: match ? match.title : "Frei" };
         });
         return { ...d, states, freeCount: states.filter(s => !s.busy).length };
     });
@@ -147,17 +142,12 @@ async function run() {
                 <div class="day-strip">
                     ${d.states.map(s => `<div class="day-box ${s.busy ? 'day-busy' : 'day-free'}" title="${s.day}: ${s.title}">${s.day.split("-")[2]}</div>`).join("")}
                 </div>
+                <button class="book-btn" onclick="alert('Buchung für ${d.name} wird vorbereitet...')">BUCHEN</button>
             </div>
             <div style="font-weight:bold;">${d.freeCount}/${d.states.length} Frei</div>
         </div>`).join("");
     
-    logger.innerHTML += `✅ Fertig.`;
-}
-
-function setup() {
-    localStorage.setItem("kKey", prompt("API Key:"));
-    localStorage.setItem("kIds", prompt("Kalender IDs:"));
-    location.reload();
+    logger.innerHTML += `✅ Analyse von ${ranking.length} Fahrern fertig.`;
 }
 </script>
 </body>
