@@ -3,197 +3,45 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Springer Dispo V49 MANAGER PRO FINAL</title>
-
+<title>Springer Dispo V49.1 PROFI FINAL</title>
 <style>
-:root{
---blue:#2563eb;
---blue2:#1d4ed8;
---green:#16a34a;
---red:#dc2626;
---orange:#f59e0b;
---bg:#eef2f7;
---text:#111827;
---muted:#6b7280;
-}
+:root{--blue:#2563eb;--blue2:#1d4ed8;--green:#16a34a;--red:#dc2626;--orange:#f59e0b;--bg:#eef2f7;--muted:#6b7280}
 *{box-sizing:border-box}
-body{
-margin:0;
-padding:20px;
-font-family:Segoe UI,Arial,sans-serif;
-background:linear-gradient(135deg,#eef2f7,#dbeafe);
-color:var(--text);
-}
-.card{
-max-width:980px;
-margin:auto;
-background:#fff;
-padding:24px;
-border-radius:24px;
-box-shadow:0 20px 60px rgba(0,0,0,.08);
-}
-h2{
-margin:0 0 18px;
-text-align:center;
-color:var(--blue);
-}
-label{
-display:block;
-margin:10px 0 6px;
-font-weight:700;
-font-size:.92rem;
-}
-input,select,textarea{
-width:100%;
-padding:12px;
-border:1px solid #e5e7eb;
-border-radius:12px;
-font-size:1rem;
-}
-.row{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:14px;
-}
-button{
-border:none;
-border-radius:12px;
-cursor:pointer;
-font-weight:700;
-transition:.15s;
-}
-button:hover{transform:translateY(-1px)}
-.main-btn{
-width:100%;
-padding:15px;
-margin-top:14px;
-background:linear-gradient(135deg,var(--blue),var(--blue2));
-color:#fff;
-}
-.setup-btn{
-width:100%;
-padding:12px;
-margin-top:10px;
-background:#f3f4f6;
-}
-.book-btn{
-padding:10px 14px;
-background:var(--green);
-color:#fff;
-margin:6px 6px 0 0;
-}
-.edit-btn{
-padding:10px 14px;
-background:var(--orange);
-color:#fff;
-margin:6px 6px 0 0;
-}
-.del-btn{
-padding:10px 14px;
-background:#fff;
-color:var(--red);
-border:1px solid #fecaca;
-margin:6px 6px 0 0;
-}
-.log{
-margin-top:14px;
-padding:14px;
-background:#0f172a;
-color:#4ade80;
-font-family:Consolas,monospace;
-border-radius:14px;
-font-size:.86rem;
-white-space:pre-wrap;
-min-height:58px;
-}
-#results{
-max-width:980px;
-margin:18px auto;
-}
-.driver{
-background:#fff;
-padding:16px;
-border-radius:18px;
-margin-bottom:12px;
-display:flex;
-justify-content:space-between;
-gap:15px;
-align-items:center;
-box-shadow:0 8px 20px rgba(0,0,0,.06);
-border-left:8px solid #d1d5db;
-}
+body{margin:0;padding:20px;font-family:Segoe UI,Arial,sans-serif;background:linear-gradient(135deg,#eef2f7,#dbeafe)}
+.card{max-width:980px;margin:auto;background:#fff;padding:24px;border-radius:24px;box-shadow:0 20px 60px rgba(0,0,0,.08)}
+h2{text-align:center;color:var(--blue);margin-top:0}
+label{display:block;margin:10px 0 6px;font-weight:700}
+input,select,textarea{width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:12px;font-size:1rem}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+button{border:none;border-radius:12px;cursor:pointer;font-weight:700}
+.main-btn{width:100%;padding:15px;margin-top:14px;background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff}
+.setup-btn{width:100%;padding:12px;margin-top:10px;background:#f3f4f6}
+.book-btn{padding:10px 14px;background:var(--green);color:#fff;margin:6px 6px 0 0}
+.edit-btn{padding:10px 14px;background:var(--orange);color:#fff;margin:6px 6px 0 0}
+.del-btn{padding:10px 14px;background:#fff;color:var(--red);border:1px solid #fecaca;margin:6px 6px 0 0}
+.log{margin-top:14px;padding:14px;background:#0f172a;color:#4ade80;font-family:Consolas,monospace;border-radius:14px}
+#results{max-width:980px;margin:18px auto}
+.driver{background:#fff;padding:16px;border-radius:18px;margin-bottom:12px;display:flex;justify-content:space-between;gap:15px;align-items:center;box-shadow:0 8px 20px rgba(0,0,0,.06);border-left:8px solid #d1d5db}
 .driver.free{border-left-color:var(--green)}
 .driver.partial{border-left-color:var(--orange)}
 .driver.busy{border-left-color:var(--red)}
-.daybar{
-display:flex;
-gap:5px;
-margin-top:8px;
-flex-wrap:wrap;
-}
-.day{
-width:30px;
-height:30px;
-border-radius:8px;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:.78rem;
-font-weight:800;
-color:#fff;
-}
+.daybar{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap}
+.day{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:800;color:#fff}
 .freeDay{background:var(--green)}
 .busyDay{background:var(--red)}
-.small{
-font-size:.84rem;
-color:var(--muted);
-}
-.right{
-min-width:150px;
-text-align:right;
-font-weight:800;
-font-size:1.1rem;
-}
-.modal{
-display:none;
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.45);
-justify-content:center;
-align-items:center;
-z-index:9999;
-padding:15px;
-}
-.modal-box{
-background:#fff;
-padding:24px;
-border-radius:22px;
-width:100%;
-max-width:520px;
-max-height:95vh;
-overflow:auto;
-}
-.inline{
-display:flex;
-align-items:center;
-gap:10px;
-margin-top:10px;
-}
-.inline input{
-width:auto;
-}
-@media(max-width:760px){
-.row{grid-template-columns:1fr}
-.driver{flex-direction:column;align-items:flex-start}
-.right{text-align:left}
-}
+.small{font-size:.84rem;color:var(--muted)}
+.right{min-width:170px;text-align:right;font-weight:800;font-size:1.05rem}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);justify-content:center;align-items:center;z-index:9999;padding:15px}
+.modal-box{background:#fff;padding:24px;border-radius:22px;width:100%;max-width:520px;max-height:95vh;overflow:auto}
+.inline{display:flex;align-items:center;gap:10px;margin-top:10px}
+.inline input{width:auto}
+@media(max-width:760px){.row{grid-template-columns:1fr}.driver{flex-direction:column;align-items:flex-start}.right{text-align:left}}
 </style>
 </head>
-
 <body>
 
 <div class="card">
-<h2>Springer Dispo V49 MANAGER PRO FINAL</h2>
+<h2>Springer Dispo V49.1 PROFI FINAL</h2>
 
 <label>Einrichtung</label>
 <select id="schoolSelect" onchange="if(this.value)startPlz.value=this.value">
@@ -207,18 +55,12 @@ width:auto;
 <option value="30827">Ilmasi Schule</option>
 </select>
 
-<label>PLZ Start</label>
+<label>PLZ Ziel / erstes Kind</label>
 <input id="startPlz" value="30159">
 
 <div class="row">
-<div>
-<label>Von</label>
-<input type="date" id="dateFrom">
-</div>
-<div>
-<label>Bis</label>
-<input type="date" id="dateTo">
-</div>
+<div><label>Von</label><input type="date" id="dateFrom"></div>
+<div><label>Bis</label><input type="date" id="dateTo"></div>
 </div>
 
 <button class="main-btn" onclick="run()">Verfügbarkeit & Ranking prüfen</button>
@@ -231,7 +73,6 @@ width:auto;
 
 <div class="modal" id="modal">
 <div class="modal-box">
-
 <h3 id="modalTitle">Termin</h3>
 
 <label>Fahrer</label>
@@ -247,14 +88,8 @@ width:auto;
 
 <div id="timeBox" style="display:none;">
 <div class="row">
-<div>
-<label>Von Uhrzeit</label>
-<input type="time" id="timeFrom" value="07:00">
-</div>
-<div>
-<label>Bis Uhrzeit</label>
-<input type="time" id="timeTo" value="13:00">
-</div>
+<div><label>Von Uhrzeit</label><input type="time" id="timeFrom" value="07:00"></div>
+<div><label>Bis Uhrzeit</label><input type="time" id="timeTo" value="13:00"></div>
 </div>
 </div>
 
@@ -262,7 +97,6 @@ width:auto;
 <button onclick="closeModal()" style="flex:1;background:#eee;padding:12px">Abbruch</button>
 <button onclick="saveModal()" style="flex:2;background:#2563eb;color:#fff;padding:12px">Speichern</button>
 </div>
-
 </div>
 </div>
 
@@ -281,8 +115,7 @@ let loadedEvents=[];
 let mode="new";
 let editId=null;
 
-function log(t){logBox.textContent=t}
-const logBox=document.getElementById("log");
+function log(t){document.getElementById("log").textContent=t}
 
 function setup(){
 localStorage.setItem("kKey",prompt("Kalender API Key:",localStorage.getItem("kKey")||""));
@@ -292,10 +125,7 @@ location.reload();
 }
 
 function clean(s){
-return (s||"").toLowerCase()
-.normalize("NFD")
-.replace(/[\u0300-\u036f]/g,"")
-.replace(/[^a-z0-9]/g,"");
+return (s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,"");
 }
 
 function toggleTimes(){
@@ -303,9 +133,7 @@ timeBox.style.display=wholeDay.checked?"none":"block";
 }
 
 function fillDrivers(selected=""){
-popDriver.innerHTML=drivers.map(d=>
-`<option ${d.name===selected?"selected":""}>${d.name}</option>`
-).join("");
+popDriver.innerHTML=drivers.map(d=>`<option ${d.name===selected?"selected":""}>${d.name}</option>`).join("");
 }
 
 function getDays(a,b){
@@ -319,9 +147,7 @@ d.setDate(d.getDate()+1);
 return arr;
 }
 
-function parseDate(s){
-return new Date(s.replace(" ","T"));
-}
+function parseDate(s){return new Date(s.replace(" ","T"))}
 
 function owns(driver,ev){
 return clean((ev.subCalendars||[]).join(" ")).includes(clean(driver.name));
@@ -333,7 +159,6 @@ const end=parseDate(ev.endDate);
 const ds=new Date(day+"T00:00:00");
 const nx=new Date(day+"T24:00:00");
 let ee=new Date(end);
-
 if(end.getHours()===0 && end.getMinutes()===0 && end.getSeconds()===0){
 ee.setMilliseconds(ee.getMilliseconds()-1);
 }
@@ -345,9 +170,7 @@ let all=[];
 for(const raw of ids.split(",")){
 const id=raw.trim();
 const url=`https://api.kalender.digital/public/event?calendarId=${id}&startDate=${from}&endDate=${to}T23:59:59&timeZone=Europe/Berlin&_=${Date.now()}`;
-const r=await fetch("https://corsproxy.io/?"+encodeURIComponent(url),{
-headers:{"X-API-KEY":key}
-});
+const r=await fetch("https://corsproxy.io/?"+encodeURIComponent(url),{headers:{"X-API-KEY":key}});
 if(!r.ok) continue;
 const d=await r.json();
 if(Array.isArray(d)) all.push(...d);
@@ -356,33 +179,70 @@ else if(Array.isArray(d.events)) all.push(...d.events);
 return all;
 }
 
+function loadGoogle(key){
+return new Promise(resolve=>{
+if(window.google){resolve();return;}
+const s=document.createElement("script");
+s.src=`https://maps.googleapis.com/maps/api/js?key=${key}`;
+s.onload=resolve;
+document.head.appendChild(s);
+});
+}
+
+function getDistances(dest){
+return new Promise(resolve=>{
+new google.maps.DistanceMatrixService().getDistanceMatrix({
+origins:drivers.map(d=>d.plz),
+destinations:[dest],
+travelMode:"DRIVING"
+},r=>resolve(r));
+});
+}
+
 async function run(){
 try{
 const kKey=localStorage.getItem("kKey");
 const kIds=localStorage.getItem("kIds");
-if(!kKey||!kIds){alert("Setup fehlt");return;}
+const gKey=localStorage.getItem("gKey");
+
+if(!kKey||!kIds||!gKey){alert("Setup fehlt");return;}
 
 const from=dateFrom.value;
 const to=dateTo.value;
+const dest=startPlz.value;
 
+log("Lade Kalender...");
 loadedEvents=await loadEvents(from,to,kIds,kKey);
+
+log("Berechne Entfernungen...");
+await loadGoogle(gKey);
+const matrix=await getDistances(dest);
 
 const days=getDays(from,to);
 
-let rows=drivers.map(d=>{
+let rows=drivers.map((d,i)=>{
 const states=days.map(day=>{
 const ev=loadedEvents.find(x=>owns(d,x)&&blocks(x,day));
-return {
-day,
-busy:!!ev,
-event:ev||null
-};
-});
-const freeCount=states.filter(x=>!x.busy).length;
-return {...d,states,freeCount};
+return {day,busy:!!ev,event:ev||null};
 });
 
-rows.sort((a,b)=>b.freeCount-a.freeCount);
+const freeCount=states.filter(x=>!x.busy).length;
+const el=matrix.rows[i].elements[0];
+
+return {
+...d,
+states,
+freeCount,
+distText:el.status==="OK"?el.distance.text:"-",
+distVal:el.status==="OK"?el.distance.value:999999
+};
+});
+
+rows.sort((a,b)=>{
+if(b.freeCount!==a.freeCount) return b.freeCount-a.freeCount;
+return a.distVal-b.distVal;
+});
+
 render(rows);
 log("Analyse abgeschlossen.");
 
@@ -393,7 +253,6 @@ log("Fehler: "+e.message);
 
 function render(list){
 results.innerHTML=list.map(d=>{
-
 let cls="busy";
 if(d.freeCount===d.states.length) cls="free";
 else if(d.freeCount>0) cls="partial";
@@ -413,10 +272,7 @@ ${d.states.map(s=>`
 </div>
 
 <div>
-${d.freeCount>0?`
-<button class="book-btn" onclick="openNew('${d.name.replace(/'/g,"")}')">BUCHEN</button>
-`:""}
-
+${d.freeCount>0?`<button class="book-btn" onclick="openNew('${d.name.replace(/'/g,"")}')">BUCHEN</button>`:""}
 ${firstBusy?`
 <button class="edit-btn" onclick="openEdit('${firstBusy.event.id}')">ÄNDERN</button>
 <button class="del-btn" onclick="deleteEvent('${firstBusy.event.id}')">LÖSCHEN</button>
@@ -425,11 +281,10 @@ ${firstBusy?`
 </div>
 
 <div class="right">
-${d.freeCount}/${d.states.length}<br>
-<div class="small">Tage frei</div>
+${d.distText}<br>
+<div class="small">${d.freeCount}/${d.states.length} Tage frei</div>
 </div>
-</div>
-`;
+</div>`;
 }).join("");
 }
 
@@ -450,9 +305,7 @@ if(!ev) return;
 
 mode="edit";
 editId=id;
-
 modalTitle.textContent="Termin ändern";
-
 fillDrivers((ev.subCalendars||[""])[0]);
 popText.value=ev.description||"";
 
@@ -471,52 +324,31 @@ toggleTimes();
 modal.style.display="flex";
 }
 
-function closeModal(){
-modal.style.display="none";
-}
+function closeModal(){modal.style.display="none"}
 
 async function saveModal(){
-
 const kKey=localStorage.getItem("kKey");
 const title=schoolSelect.options[schoolSelect.selectedIndex]?.text || "Termin";
 const driver=popDriver.value;
 const text=popText.value;
 const wd=wholeDay.checked;
 
-const startDate=wd
-? dateFrom.value+" 00:00:00"
-: dateFrom.value+" "+timeFrom.value+":00";
+const startDate=wd ? dateFrom.value+" 00:00:00" : dateFrom.value+" "+timeFrom.value+":00";
+const endDate=wd ? dateTo.value+" 23:59:59" : dateTo.value+" "+timeTo.value+":00";
 
-const endDate=wd
-? dateTo.value+" 23:59:59"
-: dateTo.value+" "+timeTo.value+":00";
-
-const payload={
-startDate,
-endDate,
-title,
-description:text,
-wholeDay:wd,
-subCalendars:[driver],
-timeZone:"Europe/Berlin"
-};
+const payload={startDate,endDate,title,description:text,wholeDay:wd,subCalendars:[driver],timeZone:"Europe/Berlin"};
 
 let url="https://api.kalender.digital/public/event";
 let method="POST";
 
 if(mode==="edit"){
-url+="\/"+editId;
+url+="/"+editId;
 method="PUT";
 }
 
-const r=await fetch(
-"https://corsproxy.io/?"+encodeURIComponent(url),
-{
+const r=await fetch("https://corsproxy.io/?"+encodeURIComponent(url),{
 method,
-headers:{
-"Content-Type":"application/json",
-"X-API-KEY":kKey
-},
+headers:{"Content-Type":"application/json","X-API-KEY":kKey},
 body:JSON.stringify(payload)
 });
 
@@ -530,16 +362,11 @@ alert("Speichern fehlgeschlagen");
 }
 
 async function deleteEvent(id){
-
 if(!confirm("Termin löschen?")) return;
 
-const r=await fetch(
-"https://corsproxy.io/?"+encodeURIComponent("https://api.kalender.digital/public/event/"+id),
-{
+const r=await fetch("https://corsproxy.io/?"+encodeURIComponent("https://api.kalender.digital/public/event/"+id),{
 method:"DELETE",
-headers:{
-"X-API-KEY":localStorage.getItem("kKey")
-}
+headers:{"X-API-KEY":localStorage.getItem("kKey")}
 });
 
 if(r.ok){
