@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Meldau DispoManager</title>
 <style>
-:root{--blue:#1d4ed8;--blue2:#2563eb;--green:#16a34a;--red:#dc2626;--orange:#f59e0b;--bg:#eef2f7;--muted:#4b5563}
+:root{--blue:#1d4ed8;--blue2:#2563eb;--green:#16a34a;--red:#dc2626;--orange:#f59e0b;--muted:#4b5563}
 *{box-sizing:border-box}
 body{margin:0;padding:20px;font-family:Segoe UI,Arial,sans-serif;background:linear-gradient(135deg,#eef2f7,#dbeafe)}
 .card{max-width:980px;margin:auto;background:#fff;padding:26px;border-radius:26px;box-shadow:0 24px 70px rgba(15,23,42,.10)}
@@ -40,10 +40,7 @@ button{border:none;border-radius:12px;cursor:pointer;font-weight:700}
 .day-choice input{width:auto}
 .delete-choice{background:#fff7f7;border-color:#fecaca}
 @media(max-width:760px){
-body{padding:12px}
-.header{flex-direction:column;text-align:center;gap:8px}
-.header img{height:58px}
-.header-title{font-size:1.7rem}
+body{padding:12px}.header{flex-direction:column;text-align:center;gap:8px}.header img{height:58px}.header-title{font-size:1.7rem}
 .row{grid-template-columns:1fr}.driver{flex-direction:column;align-items:flex-start}.right{text-align:left}
 }
 </style>
@@ -196,15 +193,17 @@ const drivers=[
 {name:"Beka Jonel",plz:"31275"},{name:"Bodewell Thomas",plz:"30853"}
 ];
 
-const melderPhones = {
-  "Reinhard": "4915205421316"
+const melderPhones={
+"Heike":"4915782029022","Beate":"491705443698","Moni":"491721745944","Nina":"491739530040",
+"Klaus":"4915739132507","Frank":"4915231878343","Angela":"491702905775","Gerhard":"491629210557",
+"Anja":"4915253221205","Jürgen":"4916222476215","Michael":"491718505569","Bettina":"49151422821554",
+"Steffi":"4915757574231484","Karin":"49157300600878","Nicole":"49151519588867","Ralf":"491756690269",
+"Katja":"4916281816066","Petra":"4915157368832","Reinhard":"4915205421316"
 };
 
 let loadedEvents=[];
 let mode="new";
 let editId=null;
-let currentStates=[];
-let deleteStates=[];
 
 function log(t){document.getElementById("log").textContent=t}
 
@@ -215,61 +214,38 @@ localStorage.setItem("gKey",prompt("Google API Key:",localStorage.getItem("gKey"
 location.reload();
 }
 
-function clean(s){
-return (s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,"");
-}
+function clean(s){return (s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,"")}
+function toggleTimes(){timeBox.style.display=wholeDay.checked?"none":"block"}
+function fillDrivers(selected=""){popDriver.innerHTML=drivers.map(d=>`<option ${d.name===selected?"selected":""}>${d.name}</option>`).join("")}
 
-function toggleTimes(){
-timeBox.style.display=wholeDay.checked?"none":"block";
-}
-
-function fillDrivers(selected=""){
-popDriver.innerHTML=drivers.map(d=>`<option ${d.name===selected?"selected":""}>${d.name}</option>`).join("");
-}
-
-function updatePopText() {
-const name=document.getElementById('nameSelect').value;
-const tour=document.getElementById('tourSelect').value;
+function updatePopText(){
+const name=nameSelect.value;
+const tour=tourSelect.value;
 let val="";
-if(name) val += name+" meldet sich: ";
-if(tour) val += tour;
-document.getElementById('popText').value=val;
+if(name) val+=name+" meldet sich: ";
+if(tour) val+=tour;
+popText.value=val;
 }
 
-function sendWhatsApp(){
-const melder=document.getElementById("nameSelect").value;
+function buildWhatsAppUrl(){
+const melder=nameSelect.value;
 const phone=melderPhones[melder];
+if(!melder||!phone) return null;
 
-if(!melder){
-alert("Bitte Melder auswählen.");
-return;
-}
-
-if(!phone){
-alert("Für diesen Melder ist keine Telefonnummer hinterlegt.");
-return;
-}
-
-const driver=document.getElementById("popDriver").value;
-const school=document.getElementById("schoolSelect").selectedOptions[0].text;
-const tour=document.getElementById("tourSelect").value || "Tour";
-const info=document.getElementById("popText").value;
-
+const driver=popDriver.value;
+const school=schoolSelect.selectedOptions[0].text;
+const tour=tourSelect.value||"Tour";
+const info=popText.value;
 const selectedDays=[...document.querySelectorAll(".freeDayCheck:checked")].map(x=>x.value);
-let niceDate="";
 
-if(selectedDays.length===1){
-const d=new Date(selectedDays[0]+"T12:00:00");
-niceDate=d.toLocaleDateString("de-DE");
-}else if(selectedDays.length>1){
+let niceDate="";
+if(selectedDays.length){
 niceDate=selectedDays.map(day=>new Date(day+"T12:00:00").toLocaleDateString("de-DE")).join(", ");
 }else{
-const d=new Date(document.getElementById("dateFrom").value+"T12:00:00");
-niceDate=d.toLocaleDateString("de-DE");
+niceDate=new Date(dateFrom.value+"T12:00:00").toLocaleDateString("de-DE");
 }
 
-const message=
-`Springer gebucht – ${tour}
+const message=`Springer gebucht – ${tour}
 
 Hallo ${melder},
 
@@ -283,17 +259,21 @@ Info: ${info}
 Viele Grüße
 Reinhard`;
 
-const url="https://wa.me/"+phone+"?text="+encodeURIComponent(message);
+return "https://wa.me/"+phone+"?text="+encodeURIComponent(message);
+}
+
+function sendWhatsApp(){
+const url=buildWhatsAppUrl();
+if(!url){alert("Bitte Melder mit hinterlegter Telefonnummer auswählen.");return;}
 window.open(url,"_blank");
 }
 
 window.onload=()=>{
-const ts=document.getElementById('tourSelect');
 for(let i=1;i<=40;i++){
 let o=document.createElement('option');
 o.value="Tour "+i;
 o.innerText="Tour "+i;
-ts.appendChild(o);
+tourSelect.appendChild(o);
 }
 dateFrom.value=new Date().toISOString().slice(0,10);
 dateTo.value=new Date().toISOString().slice(0,10);
@@ -304,29 +284,18 @@ function getDays(a,b){
 let arr=[];
 let d=new Date(a+"T12:00:00");
 let e=new Date(b+"T12:00:00");
-while(d<=e){
-arr.push(d.toISOString().slice(0,10));
-d.setDate(d.getDate()+1);
-}
+while(d<=e){arr.push(d.toISOString().slice(0,10));d.setDate(d.getDate()+1)}
 return arr;
 }
 
 function parseDate(s){return new Date(s.replace(" ","T"))}
-
-function owns(driver,ev){
-return clean((ev.subCalendars||[]).join(" ")).includes(clean(driver.name));
-}
-
+function owns(driver,ev){return clean((ev.subCalendars||[]).join(" ")).includes(clean(driver.name))}
 function blocks(ev,day){
-const start=parseDate(ev.startDate);
-const end=parseDate(ev.endDate);
-const ds=new Date(day+"T00:00:00");
-const nx=new Date(day+"T24:00:00");
+const start=parseDate(ev.startDate), end=parseDate(ev.endDate);
+const ds=new Date(day+"T00:00:00"), nx=new Date(day+"T24:00:00");
 let ee=new Date(end);
-if(end.getHours()===0 && end.getMinutes()===0 && end.getSeconds()===0){
-ee.setMilliseconds(ee.getMilliseconds()-1);
-}
-return start<nx && ee>=ds;
+if(end.getHours()===0&&end.getMinutes()===0&&end.getSeconds()===0){ee.setMilliseconds(ee.getMilliseconds()-1)}
+return start<nx&&ee>=ds;
 }
 
 async function loadEvents(from,to,ids,key){
@@ -337,15 +306,14 @@ const url=`https://api.kalender.digital/public/event?calendarId=${id}&startDate=
 const r=await fetch("https://corsproxy.io/?"+encodeURIComponent(url),{headers:{"X-API-KEY":key}});
 if(!r.ok) continue;
 const d=await r.json();
-if(Array.isArray(d)) all.push(...d);
-else if(Array.isArray(d.events)) all.push(...d.events);
+if(Array.isArray(d)) all.push(...d); else if(Array.isArray(d.events)) all.push(...d.events);
 }
 return all;
 }
 
 function loadGoogle(key){
 return new Promise(resolve=>{
-if(window.google){resolve();return;}
+if(window.google){resolve();return}
 const s=document.createElement("script");
 s.src=`https://maps.googleapis.com/maps/api/js?key=${key}`;
 s.onload=resolve;
@@ -356,31 +324,23 @@ document.head.appendChild(s);
 function getDistances(dest){
 return new Promise(resolve=>{
 new google.maps.DistanceMatrixService().getDistanceMatrix({
-origins:drivers.map(d=>d.plz),
-destinations:[dest],
-travelMode:"DRIVING"
+origins:drivers.map(d=>d.plz),destinations:[dest],travelMode:"DRIVING"
 },r=>resolve(r));
 });
 }
 
 async function run(){
 try{
-const kKey=localStorage.getItem("kKey");
-const kIds=localStorage.getItem("kIds");
-const gKey=localStorage.getItem("gKey");
-if(!kKey||!kIds||!gKey){alert("Setup fehlt");return;}
-
-const from=dateFrom.value;
-const to=dateTo.value;
-const dest=startPlz.value;
+const kKey=localStorage.getItem("kKey"), kIds=localStorage.getItem("kIds"), gKey=localStorage.getItem("gKey");
+if(!kKey||!kIds||!gKey){alert("Setup fehlt");return}
 
 log("Lade Kalender...");
-loadedEvents=await loadEvents(from,to,kIds,kKey);
+loadedEvents=await loadEvents(dateFrom.value,dateTo.value,kIds,kKey);
 
 log("Berechne Entfernungen...");
 await loadGoogle(gKey);
-const matrix=await getDistances(dest);
-const days=getDays(from,to);
+const matrix=await getDistances(startPlz.value);
+const days=getDays(dateFrom.value,dateTo.value);
 
 let rows=drivers.map((d,i)=>{
 const states=days.map(day=>{
@@ -392,10 +352,7 @@ const el=matrix.rows[i].elements[0];
 return {...d,states,freeCount,distText:el.status==="OK"?el.distance.text:"-",distVal:el.status==="OK"?el.distance.value:999999};
 });
 
-rows.sort((a,b)=>{
-if(b.freeCount!==a.freeCount) return b.freeCount-a.freeCount;
-return a.distVal-b.distVal;
-});
+rows.sort((a,b)=>b.freeCount!==a.freeCount?b.freeCount-a.freeCount:a.distVal-b.distVal);
 render(rows);
 log("Analyse abgeschlossen.");
 }catch(e){log("Fehler: "+e.message)}
@@ -404,8 +361,7 @@ log("Analyse abgeschlossen.");
 function render(list){
 results.innerHTML=list.map(d=>{
 let cls="busy";
-if(d.freeCount===d.states.length) cls="free";
-else if(d.freeCount>0) cls="partial";
+if(d.freeCount===d.states.length) cls="free"; else if(d.freeCount>0) cls="partial";
 const firstBusy=d.states.find(x=>x.busy);
 return `
 <div class="driver ${cls}">
@@ -419,28 +375,22 @@ ${d.states.map(s=>`<div class="day ${s.busy?'busyDay':'freeDay'}">${s.day.slice(
 ${d.freeCount>0?`<button class="book-btn" onclick='openNew(${JSON.stringify(d.name)}, ${JSON.stringify(d.states)})'>BUCHEN</button>`:""}
 ${firstBusy?`
 <button class="edit-btn" onclick="openEdit('${firstBusy.event.id}')">ÄNDERN</button>
-<button class="del-btn" onclick='openDelete(${JSON.stringify(d.name)}, ${JSON.stringify(d.states)})'>LÖSCHEN</button>
-`:""}
+<button class="del-btn" onclick='openDelete(${JSON.stringify(d.name)}, ${JSON.stringify(d.states)})'>LÖSCHEN</button>`:""}
 </div>
 </div>
-<div class="right">
-${d.distText}<br>
-<div class="small">${d.freeCount}/${d.states.length} Tage frei</div>
-</div>
+<div class="right">${d.distText}<br><div class="small">${d.freeCount}/${d.states.length} Tage frei</div></div>
 </div>`;
 }).join("");
 }
 
 function openNew(name,states){
-mode="new";
-editId=null;
-currentStates=states;
+mode="new"; editId=null;
 modalTitle.textContent="Neuen Termin buchen";
 freeDaysLabel.style.display="block";
 freeDaysBox.style.display="grid";
 fillDrivers(name);
-document.getElementById('nameSelect').value="";
-document.getElementById('tourSelect').value="";
+nameSelect.value="";
+tourSelect.value="";
 popText.value="";
 wholeDay.checked=true;
 toggleTimes();
@@ -457,8 +407,7 @@ modal.style.display="flex";
 function openEdit(id){
 const ev=loadedEvents.find(x=>String(x.id)===String(id));
 if(!ev) return;
-mode="edit";
-editId=id;
+mode="edit"; editId=id;
 modalTitle.textContent="Termin ändern";
 freeDaysLabel.style.display="none";
 freeDaysBox.style.display="none";
@@ -466,7 +415,7 @@ fillDrivers((ev.subCalendars||[""])[0]);
 popText.value=ev.description||"";
 const st=(ev.startDate||"").split(" ")[1]||"00:00:00";
 const et=(ev.endDate||"").split(" ")[1]||"23:59:59";
-if(ev.wholeDay){wholeDay.checked=true;}else{wholeDay.checked=false;timeFrom.value=st.slice(0,5);timeTo.value=et.slice(0,5);}
+if(ev.wholeDay){wholeDay.checked=true}else{wholeDay.checked=false;timeFrom.value=st.slice(0,5);timeTo.value=et.slice(0,5)}
 toggleTimes();
 modal.style.display="flex";
 }
@@ -474,41 +423,31 @@ modal.style.display="flex";
 function closeModal(){modal.style.display="none"}
 
 function openDelete(name,states){
-deleteStates=states.filter(s=>s.busy && s.event);
+const deleteStates=states.filter(s=>s.busy&&s.event);
 deleteDriver.value=name;
-
 deleteDaysBox.innerHTML=deleteStates.map(s=>{
 const d=s.day.split("-");
-const title=s.event.title || "Termin";
+const title=s.event.title||"Termin";
 return `<label class="day-choice delete-choice">
 <input type="checkbox" class="deleteDayCheck" value="${s.event.id}" checked>
 ${d[2]}.${d[1]}.${d[0]}<br><span class="small">${title}</span>
 </label>`;
 }).join("");
-
 deleteModal.style.display="flex";
 }
 
-function closeDeleteModal(){
-deleteModal.style.display="none";
-}
+function closeDeleteModal(){deleteModal.style.display="none"}
 
 async function confirmDeleteSelected(){
 const ids=[...document.querySelectorAll(".deleteDayCheck:checked")].map(x=>x.value);
 const uniqueIds=[...new Set(ids)];
-
-if(uniqueIds.length===0){
-alert("Bitte mindestens einen Termin auswählen.");
-return;
-}
-
+if(!uniqueIds.length){alert("Bitte mindestens einen Termin auswählen.");return}
 if(!confirm(uniqueIds.length+" Termin(e) wirklich löschen?")) return;
 
 let ok=0;
 for(const id of uniqueIds){
 const r=await fetch("https://corsproxy.io/?"+encodeURIComponent("https://api.kalender.digital/public/event/"+id),{
-method:"DELETE",
-headers:{"X-API-KEY":localStorage.getItem("kKey")}
+method:"DELETE",headers:{"X-API-KEY":localStorage.getItem("kKey")}
 });
 if(r.ok) ok++;
 }
@@ -520,25 +459,25 @@ alert(ok+" Termin(e) gelöscht.");
 
 async function saveModal(){
 const kKey=localStorage.getItem("kKey");
-const title=schoolSelect.options[schoolSelect.selectedIndex]?.text || "Termin";
+const title=schoolSelect.options[schoolSelect.selectedIndex]?.text||"Termin";
 const driver=popDriver.value;
 const text=popText.value;
 const wd=wholeDay.checked;
 
 if(mode==="new"){
 const selectedDays=[...document.querySelectorAll(".freeDayCheck:checked")].map(x=>x.value);
-if(selectedDays.length===0){alert("Bitte mindestens einen freien Tag auswählen.");return;}
+if(!selectedDays.length){alert("Bitte mindestens einen freien Tag auswählen.");return}
+
+let waWindow=null;
+const waUrl=buildWhatsAppUrl();
+if(waUrl) waWindow=window.open("about:blank","_blank");
 
 let ok=0;
 for(const day of selectedDays){
 const payload={
-startDate:wd ? day+" 00:00:00" : day+" "+timeFrom.value+":00",
-endDate:wd ? day+" 23:59:59" : day+" "+timeTo.value+":00",
-title,
-description:text,
-wholeDay:wd,
-subCalendars:[driver],
-timeZone:"Europe/Berlin"
+startDate:wd?day+" 00:00:00":day+" "+timeFrom.value+":00",
+endDate:wd?day+" 23:59:59":day+" "+timeTo.value+":00",
+title,description:text,wholeDay:wd,subCalendars:[driver],timeZone:"Europe/Berlin"
 };
 
 const r=await fetch("https://corsproxy.io/?"+encodeURIComponent("https://api.kalender.digital/public/event"),{
@@ -549,36 +488,35 @@ body:JSON.stringify(payload)
 if(r.ok) ok++;
 }
 
+if(waWindow&&ok>0) waWindow.location.href=waUrl;
+if(waWindow&&ok===0) waWindow.close();
+
 closeModal();
 await run();
 alert(ok+" Termin(e) gebucht.");
 return;
 }
 
-const startDate=wd ? dateFrom.value+" 00:00:00" : dateFrom.value+" "+timeFrom.value+":00";
-const endDate=wd ? dateTo.value+" 23:59:59" : dateTo.value+" "+timeTo.value+":00";
+const startDate=wd?dateFrom.value+" 00:00:00":dateFrom.value+" "+timeFrom.value+":00";
+const endDate=wd?dateTo.value+" 23:59:59":dateTo.value+" "+timeTo.value+":00";
 const payload={startDate,endDate,title,description:text,wholeDay:wd,subCalendars:[driver],timeZone:"Europe/Berlin"};
 
-let url="https://api.kalender.digital/public/event/"+editId;
-
-const r=await fetch("https://corsproxy.io/?"+encodeURIComponent(url),{
+const r=await fetch("https://corsproxy.io/?"+encodeURIComponent("https://api.kalender.digital/public/event/"+editId),{
 method:"PUT",
 headers:{"Content-Type":"application/json","X-API-KEY":kKey},
 body:JSON.stringify(payload)
 });
 
-if(r.ok){closeModal();run();alert("Geändert");}
-else{alert("Speichern fehlgeschlagen");}
+if(r.ok){closeModal();run();alert("Geändert")}
+else{alert("Speichern fehlgeschlagen")}
 }
 
 async function deleteEvent(id){
 if(!confirm("Termin löschen?")) return;
 const r=await fetch("https://corsproxy.io/?"+encodeURIComponent("https://api.kalender.digital/public/event/"+id),{
-method:"DELETE",
-headers:{"X-API-KEY":localStorage.getItem("kKey")}
+method:"DELETE",headers:{"X-API-KEY":localStorage.getItem("kKey")}
 });
-if(r.ok){run();alert("Gelöscht");}
-else{alert("Löschen fehlgeschlagen");}
+if(r.ok){run();alert("Gelöscht")}else{alert("Löschen fehlgeschlagen")}
 }
 </script>
 </body>
